@@ -1,0 +1,88 @@
+--- 
+title: "Notes on Modern Statistics for the Social and Behavioral Sciences"
+author: "Peter Baumgartner"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+documentclass: book
+bibliography: [book.bib, packages.bib]
+biblio-style: apalike
+link-citations: yes
+description: "This is a minimal example of using the bookdown package to write a book. The output format for this example is bookdown::gitbook."
+---
+
+# Introduction {#intro}
+
+This chapter presents my motiviation to write this book besides some requirements and starting points so that you can follow the following chapters on your own.
+
+## Status of this book
+
+This book collects my excerpts and personal notes on 
+
+> Rand, W. (2017). Modern Statistics for the Social and Behavioral Sciences: A Practical Introduction, Second Edition (2 New edition). Boca Raton, FL: Taylor & Francis Inc.
+
+Please keep in mind that this book is just a kind of a training exercise for me. There will be no new insights presented and as I am still learning the basics of R and statistics you may find minsunderstandings and errors in my writings. For authoritative reference you have the consult the original book.  
+
+With this book I pursue three personal learning goals:
+
+* To get more experience with the bookdown package.
+* To get more practice with R, the free software environment for statistical computing and graphics.
+* To learn more about modern statistics for the social sciences to get at least an intermediate practical knowledge for developing my own data analysis projects.
+
+## Web pages
+
+* **Homepage:** https://dornsife.usc.edu/cf/labs/wilcox/wilcox-faculty-display.cfm
+* **Data:** https://dornsife.usc.edu/labs/rwilcox/datasets/
+* **Software:** https://dornsife.usc.edu/labs/rwilcox/software/
+* **Solutions:** https://dornsife.usc.edu/assets/sites/239/docs/CRC_answers.pdf
+* **Errata**: https://dornsife.usc.edu/assets/sites/239/docs/CRC_2nd_Ed_errata.pdf
+* **GitHub WRS**: https://raw.githubusercontent.com/nicebread/WRS/master/pkg/R/Rallfun-v36.R
+* **GitHub WRS2**: https://github.com/cran/WRS2/tree/master/R
+* **GitHub WRS3**: https://github.com/mrxiaohe/WRScpp
+
+
+## Software (R Packages)
+
+There are three different ways to install the software accompanying the book:
+
+### All functions
+
+The current release (2019-08-03) `Software/Rfunall-v36.txt` is a textfile and has to be sourced. It is the most updated version and easy to install. It has the disadvantage that no help files are available. But whenever you call the function without parenthesis from the console, the source code with summarized information on the top is displayed. 
+
+As I see it, an additional disadvantage is that sourcing all functions at the same time is cluttering up the global environment (workspace) and needs a lot of working memory too. So I will not load the whole file, but copy & paste those functions I will immediately need.
+
+### GitHub Version
+
+You can download the `WRS Package` from https://github.com/nicebread/WRS form Github, where you can also find the details of the installation process. (I am not sure, but the installation process seems more cumbersome --  at least when you have to download all the dependent and suggested packages manually. But I believe most of these packages would be installed automatically.)
+
+The Github version is not always up-to-date, but at the time of this writing (2019-08-03), it has already installed the current Version v36. On Github, you will also find instructions on the installation of the C++ version. The C++ functions in the package `WRScpp` may considerably shorten the executions times of some functions. But currently I have problems to innstall them. (See my [error report](https://github.com/mrxiaohe/WRScpp/issues/5).)
+
+```{r install-github}
+# first: install dependent packages
+# I am going to use for easier installation the package `xfun`
+xfun::pkg_attach2("MASS", "akima", "robustbase", "devtools")
+
+# second: install suggested packages
+xfun::pkg_attach2("cobs", "robust", "mgcv", "scatterplot3d", "quantreg", "rrcov", "lars", "pwr", "trimcluster", "mc2d", "psych", "Rfit", "DepthProc", "class", "fda")
+
+# third: install an additional package which provides some C functions
+xfun::pkg_attach2("RcppArmadillo")
+# gets an error message: see https://github.com/mrxiaohe/WRScpp/issues/5
+# remotes::install_github("mrxiaohe/WRScpp", build_manual = TRUE, build_vignettes = TRUE)
+
+# fourth: install WRS
+if (!requireNamespace("xfun"))
+remotes::install_github("nicebread/WRS", subdir = "pkg", build_manual = TRUE, build_vignettes = TRUE)
+
+```
+
+### Install CRAN version
+
+The appeal of this limited edition are the included help files. There is an long article^[Mair, P., & Wilcox, R. (2019). Robust statistical methods in R using the WRS2 package. Behavior Research Methods. https://doi.org/10.3758/s13428-019-01246-w ] with a description of the functions currently available. (Here is the link for [direct access to the PDF](https://dornsife.usc.edu/assets/sites/239/docs/WRS2.pdf).)
+
+```{r istall-cran}
+xfun::pkg_attach2("WRS2")
+```
+
+I have installed the R package from CRAN and will compare it with the full version. Whenever the need arises e.g., whenever I need functions not available in the CRAN version, I will copy & paste the source code of the appropriate functions into the R code chunk and load them.
+
+

@@ -1,0 +1,673 @@
+# Summaries of Data
+
+
+```{r label = "global-options", echo=FALSE, highlight=TRUE}
+knitr::opts_chunk$set(
+        message = F,
+        error = F,
+        warning = F,
+        comment = NA,
+        highlight = T,
+        prompt = T
+        )
+
+if (!requireNamespace("xfun")) install.packages("xfun")
+library(xfun)
+
+pkg_attach2("tidyverse", "WRS", "WRS2", "knitr", "kableExtra")
+
+# Data I am generally working with:
+x_data <- c(12, 45, 23, 79, 19, 92, 30, 58, 132, 1000)
+```
+
+
+The following text is not a complete excerpt or summary of chapter 2. On the one hand I will only write down those things that are new for me and were not coverend in other introductory statistics text books. On the other side I am exploring the presented concepts and at this occasion I will using and practicing R.
+
+## Measures of Locations
+
+### Definition and examples
+
+The common description of a "measure of location" as a number intended to reflect the typical individual or thing under study is misleading. A more accurat definition is, that a measure of lcoation has to satisfy three properties (p.25):
+
+* The value always lies between largest and smallest value inclusive.
+* If all the values are multiplied by a constant, the value of the measures of location are multipled with this constand as well.
+* If a constant is added to every value, then the measures of location is increased by this constant too. 
+
+Measures of locations are:
+
+1. **The sample mean**, calculated with the built-in function `mean(x)`. This measure is very sensitive to outliers. 
+
+> One way of quantifying the sensitivity of the sample mean to outliers is with the so-called _finite sample breakdown point_ … [which] is the smallest proportion of observations that can make it arbitrary large or small. Said another way, the finite sample breakdown point of the sample mean is the smallest proportion  of _n_ observations that can render it meaningless. A singe observation can make the sample mean arbitrarily large or small, regardless of what the other values might be, so its finite sample breakdown point is _1/n_. (p.19)
+
+The name _breakdown point_ refers to the maximal amount of variation the measure can withstand before it breaks down, i.e. before it can take arbitrary values^[Perret-Gentil, C., & Victoria-Feser, M.-P. (2003). Financial Valuation and Risk Management Working Paper No. 173 Robust Mean-Variance Portfolio Selection Cédric]. 
+
+2. **The sample median**, calculated with the built-in function `median(x)`. It is the most extreme example of a trimmed mean, e.g., a mean where as specified portion of the smallest and largest values are cut and not included in the computation of the average. The finite sample breakdown point for the median is approximately 0.5, the highest possible value.
+
+### Critical discussion
+
+> Based on the single criterion of having a high breakown point, the median beats the mean. But is not beeing suggested that the mean is always inappropriate when extreme values occur (p.21).
+
+Take for example an individual reporting that the median amount of earnings over a 10 year period is $100,000.This sounds good, but consider following income situation:
+
+100,000, 100,000, 100,000, 100,000, 100,000, 100,000, 100,000, 100,000, 100,000, -1.000,000. At the end of the 10 year period the individuam has earned nothing but in fact lost 100,000. Here the long term amount of earning, as expressed in the mean, is important.
+
+```{r exmaple-1}
+x <- c(100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, -1000000)
+mean(x)
+median(x)
+```
+
+Or take the daily rainfall in Boston, Massachusetts as another example for the appropriateness of the mean. The median is zero, because no rain is typical for Boston. But, of course, it does rain in Boston sometimes.
+
+### Trimmed mean
+
+The sample median represents the most extreme amout of trimming and might trim too many values. Therefore many times a trimmed mean performs better. Often a good choice for the routine use of a trimmed mean is 20%. In that case 20% of the lowest and highest data are cut, i.e., are not included in the caluation of the mean. There is a parameter in the built-in function `mean(x, trim=0.2)`, where the finite sample breakdown point is approximately 0.2^[In the Wilcox-book the argument is not `trim` but wrongly `tr`. Besides, there is also mentioned on p.23 a function `tmean()` especially written for the book, but I could not find this function in the various versions of the WRS package.].
+
+### Winsorized mean
+
+Later in chapter 4 the so-called winsorized mean^[See the German explication for "winsorisieren": https://m.portal.hogrefe.com/dorsch/winsorisieren/] is needed. Instead of trimming a certain percentage of the lowest and highest data the winsorized mean set this percentage of data equal to the lowest respectively to the highest value which would have not be trimmed by the trim function. Again the finite sample breakdown point equals approximatelythe proportion of points winsorized.
+
+### Comparative example
+
+Compare the results of the different measures with the following values: "12, 45, 23, 79, 19, 92, 30, 58, 132, 1000", i.e., sorted = "12, 19, 23, 30, 45, 58, 79, 92, 132, 1000".
+
+
+```{r compare-trim-winsorized-mean, hold=TRUE}
+
+x_data_mean <- format(round(mean(x_data), 2), nsmall = 2)
+x_data_median <- format(round(median(x_data), 2), nsmall = 2)
+x_data_trim_mean <- format(round(mean(x_data, 0.2), 2), nsmall = 2)
+x_data_win_mean <-  format(round(winmean(x_data, 0.2), 2), nsmall = 2)
+
+```
+
+
+
+| Measure               | Value                  | Notes
+|:----------------------|-----------------------:|:-----------------------------|
+| Mean                  | `r x_data_mean`        | "`r sort(x_data)`"
+| Median                | `r x_data_median`      |"12, 19, 23, 30, **45**, **58**, 79, 92, 132, 1000"
+| 20% trimmed mean      | `r x_data_trim_mean`   | "[12, 19], `r sort(x_data)[3:8]`, [132, 1000]"
+| 20% winsorized mean   | `r x_data_win_mean`    |"23, 23, 23, 30, 45, 58, 79, 92, 92, 92"
+
+
+This demonstrations shows that the non-adapted mean is quite different from the median. It is almost three times bigger! You will get considerably better results with the trimmed mean and the winsorized mean (`r x_data_trim_mean` respectively `r x_data_win_mean`).
+
+## Measures of Variance
+
+Not all people are alike. Even objects of the same category have more or less slightly different features. In real life there is always variation. And it is exactly this inevitable variation which is the motivation for sophisticated statistical techniques. We need therefore appropriate measures of variation, which are also called measures of scale.
+
+### Sample Variance and Standard Deviation
+
+* **The sample variance $s^{2}$:** Substract the sample mean from each observations and square them. Add all differences and divide by the number of observation mminus one. The build-in R function is $var(x)$.
+* **The sample standard deviation $s$:** It is the positive square root of the sample variance. The build-in R function is $sd(x)$.
+
+The sample variance is not resistent to outliers: A single unusual value can inflate the sample variance and give a misleading figure.
+
+### The Interquartile Range
+
+#### How to construct the IQR?
+
+Another measure of dispersion, which is particularily used when the goal is to detect outliers, is called the interquartile range (IQR). The IQR reflects the range of values among the middle 50% of the data.
+
+The usual way to compute it is by removing the smallest and largest 25% of the data. Then we take the difference between the largest (`q1`) und smallest (`q2`) values remaining. $q2$ and $q1$ are called lower and upper _quartiles_ respecitvely. 
+
+There are many alternative proposals for the computation of the IQR, slightly altering the calculation of the sample quantiles. The help page in R for sample quantiles records nine different types. 
+
+#### Calculation of the _ideal fourth_
+
+A more complicated calculation uses the so-called lower and upper _ideal fourth_:
+
+$$q_{1} = (1 -h)X_{j} + hX_{j+1}$$
+where $j$ is the integer portion of $(n/4) + (5/12)$, meaning that $J$ is $(n/4) + (5/12)$ rounded down to the nearest integer, and
+
+$$h = \frac{n}{4} + \frac{5}{12} - j$$
+The upper ideal fourth is
+
+$$q_{2} = (1 -h)X_{k} + hX_{k-1}$$
+where $k = n - j + 1$ in which case the interqaurtile range is
+
+$$IQR = q_{2} - q_{1}$$
+
+#### Example calculation
+
+Wilcox shows the process of the computation with the following 12 values: $-29.6, -20.9, -19.7, -15.4, -8.0, -4.3, 0.8, 2.0, 6.2, 11.2, 25.0$
+
+$$\frac{n}{4} + \frac{5}{12} = $$
+$$\frac{12}{4} + \frac{5}{12} = $$
+$$\frac{36}{12} + \frac{5}{12} = $$
+$$\frac{41}{12} = 3.41667$$
+
+Rounding 3.41667 to the nearest integer = `r round(3.41667)`, so h = 3.41667 - 3 = 0.41667. Because $X_{3} = -19.7$ and $X_{4} = -15.4$ we get
+
+$$q_{1} = (1-0.41667)(-19.7) + 0.41667(-15.4) = -17.9$$
+and
+
+$$q_{2} = (1-0.41667)(-6.2) + 0.41667(2.0) = 4.45$$
+So the interquartile range, based on the ideal fourth is
+
+$$IQR = 4.45 - (-17.9) = 22.35$$
+
+#### Comparison of different IQR computations
+
+With `idealf(x)` respectively `idealfIQR` using the ideal fourths a tenth function was especially written for the Wilcox book. To use this Wilcox measure I had to copy and load the corresponding functions `idealf`, `idealfIQR` from the `Software/Rallfun-v36.txt` and additionally `elimna` (called by `idealfIQR`), which is only located on the github version of [WRS2](https://github.com/cran/WRS2/blob/master/R/elimna.R).
+
+
+
+```{r load-idealf}
+
+idealf <- function(x, na.rm = FALSE) {
+  #
+  # Compute the ideal fourths for data in x
+  #
+  if (na.rm)
+    x <- x[!is.na(x)]
+  j <- floor(length(x) / 4 + 5 / 12)
+  y <- sort(x)
+  g <- (length(x) / 4) - j + (5 / 12)
+  ql <- (1 - g) * y[j] + g * y[j + 1]
+  k <- length(x) - j + 1
+  qu <- (1 - g) * y[k] + g * y[k - 1]
+  list(ql = ql, qu = qu)
+}
+
+idealfIQR <- function(x) {
+  #
+  #  Compute the interquartile range using the ideal fourths.
+  x = elimna(x)
+  res = idealf(x)$qu - idealf(x)$ql
+  res
+}
+
+elimna <- function(m) {
+  #
+  # remove any rows of data having missing values
+  #
+  if (is.null(dim(m)))
+    m <- as.matrix(m)
+  ikeep <- c(1:nrow(m))
+  for (i in 1:nrow(m))
+    if (sum(is.na(m[i,]) >= 1))
+      ikeep[i] <- 0
+  elimna <- m[ikeep[ikeep >= 1], ]
+  elimna
+}
+
+q <-  c(-29.6, -20.9, -19.7, -15.4, -12.3, -8.0, -4.3, 
+        0.8, 2.0, 6.2, 11.2, 25.0)
+
+```
+
+| Function    | Quantiles: 25%, 75%                 | IQR               |
+|:------------|------------------------------------:|------------------:|
+| IQR, Type 1 | `r format(quantile(q,c(0.25,0.75),type=1),nsmall=2)` | `r format(IQR(q,type=1),nsmall=2)` |
+| IQR, Type 2 | `r format(quantile(q,c(0.25,0.75),type=2),nsmall=2)` | `r format(IQR(q,type=2),nsmall=2)` |
+| IQR, Type 3 | `r format(quantile(q,c(0.25,0.75),type=3),nsmall=2)` | `r format(IQR(q,type=3),nsmall=2)` |
+| IQR, Type 4 | `r format(quantile(q,c(0.25,0.75),type=4),nsmall=2)` | `r format(IQR(q,type=4),nsmall=2)` |
+| IQR, Type 5 | `r format(quantile(q,c(0.25,0.75),type=5),nsmall=2)` | `r format(IQR(q,type=5),nsmall=2)` |
+| IQR, Type 6 | `r format(quantile(q,c(0.25,0.75),type=6),nsmall=2)` | `r format(IQR(q,type=6),nsmall=2)` |
+| IQR, Type 7 | `r format(quantile(q,c(0.25,0.75),type=7),nsmall=2)` | `r format(IQR(q,type=7),nsmall=2)` |
+| IQR, Type 8 | `r format(quantile(q,c(0.25,0.75),type=8),nsmall=2)` | `r format(IQR(q,type=8),nsmall=2)` |
+| IQR, Type 9 | `r format(quantile(q,c(0.25,0.75),type=9),nsmall=2)` | `r format(IQR(q,type=9),nsmall=2)` |
+| idealf / idealfIQR| `r format(idealf(q)$ql,nsmall=2)`, `r format(idealf(q)$qu,nsmall=2)`                 | `r format(idealfIQR(q),nsmall=2)`  |
+
+The table above compares the different computation for the IQR. R uses as standard `type = 7`. Note that `type = 8` corresponds exactly to the ideal fourth calculation.
+
+### Winsorized Variance
+
+When working with the trimmed mean, than the winsorized variance plays an important role. The winsorized variance is just the sample variance of the winsorized values. Its finite sample breakdown point is equal to the amount winsorized.
+
+The R function `winvar` is especially written for the book and takes of its default 0.2. `winvar(x, tr = 0.2, na.rm = FALSE, STAND = NULL)`^[The parameter `STAND` has no functionality, only kept for WRS compatibility purposes.]
+
+```{r winvar-example}
+x_data <- c(12, 45, 23, 79, 19, 92, 30, 58, 132)
+var_win_0.2 <- round(winvar(x_data), 2)
+var_win_0.0 <- round(winvar(x_data, tr = 0), 2)
+var_std <-  round(var(x_data), 2)
+
+```
+
+The default 20% winsorized variance calculated with `winvar(x)` = **`r var_win_0.2`**. The standard sample variance calculated with `winvar(x, tr = 0)` = **`r var_win_0.0`**. Typically the winsorized variance is smaller than the sample variance _s^2^_ calculated with `var(x)`, because winsorizing pulls in extreme values. But in this case both values are almost the same as the standard variance is also **`r var_std`**.
+
+### Median Absolute Deviation (MAD)
+
+The median absolute deviation (MAD) is another measure of dispersions and plays an important role when trying to detect outliers. 
+
+There are three steps for its calculation. I will demonstrate these three steps with the figures from the example above,. eg., with the values $12, 45, 23, 79, 19, 92, 30, 58, 132$:
+
+1. Campute the sample Median _M_. (After sorting the values $12, 19, 23, 30, 45, 58, 79, 92, 132$ you get  _M_ = 45.
+2. Substract this value (45) from every observed value and take the aboslute value. (For instance:
+$X_1 - M = |12 - 45| = 33$ and $|X_2 - M| = 0$. All values are: $33, 0, 22, 34, 26, 47, 15, 13, 87$.)
+3. MAD is the median of this new list of values: $26$.
+
+For reasons related to the normal distribution, MAD is typically corrected by a certain factor, namely multiplied by $0.6745$ or divided by $1.4826$. To differentiate this value form the uncorrected `MAD` it is sometimes called `MADN`.
+
+R has a built-in function `mad()` which calculates MADN.
+
+```{r calculate_madn}
+x_data <- c(12, 45, 23, 79, 19, 92, 30, 58, 132)
+x_mad <- mad(x_data)
+x_madn1 <- mad(x_data) * 0.6745
+x_madn2 <- mad(x_data) / 1.4826
+```
+
+The calculated MAD = **`r x_mad`** but to get MADN this value is divided by the factor `1.4826`, resulting in **`r x_madn2`** exactly ---  or as mentioned in the Wilcox book multiplied by `0.6745` with almost the same value of **`r x_madn1`**.
+
+### Other robust measures of variation
+
+There are many (~ 150) other measures of dispersion. Two well performing measures are the _biweight midvariance_ and the _percentage bend midvariance_. More recently some new measures have been proposed, such as the _translated biweight S (TBS)_ estimator^[I couldn't find the TBS measure of variation `tbsvar()` in any of the packages recommended in the book. But maybe it is included in the C-version, which I didn't manage to download.] and the _tau measure of scale_.
+
+In contrast to the other measures already described, these new measures follow a different approach: Basically MAD or winsorized variance consider only the middle portion of the data whereas the four measures mentioned in this section try to detect outliers and then to discard them from the calculation.
+
+The R-functions for these measures are: 
+
+* Percentage Bend Midvariance: `pbvar()`
+* Biweight Midvariance: `bivar()`
+* Tau measure of scale: `tauvar()`
+* Translated Biweight S (TBS): I couldn't find this measure in the Wilcox Packages.
+
+```{r other_dispersions-measures}
+
+measures = c("pbvar", "bivar", "tauvar")
+m <- matrix(c(12, 45, 23, 79, 19, 92, 30, 58, 132,
+              12, 45, 23, 79, 19, 92, 30, 58, 1000,
+              12, 45, 23, 79, 19, 1000, 30, 58, 1000,
+              12, 45, 23, 1000, 19, 1000, 30, 58, 1000),
+            nrow = 9, ncol = 4, byrow = FALSE,
+            dimnames = list(c("Var1", "Var2", "Var3",
+                              "Var4", "Var5", "Var6",
+                              "Var7", "Var8", "Var9"),
+                            c("Vector W", "Vector X", "Vector Y", "Vector Z")))
+
+v = NULL
+for (i in 1:length(measures)) {
+  v <- rbind(v,apply(m, 2, measures[i]))
+}
+row.names(v) <- measures
+m <- rbind(m, v)
+m %>% 
+  kable(format.args = list(nsmall = 2)) %>% 
+  kable_styling(bootstrap_options = 
+                  c("striped", "hover", "condensed", "responsive"),
+                  full_width = F, position = "float_right",
+                  font_size = 14) %>% 
+  row_spec(10:12, bold = T, color = "white", background = "#D7261E")
+```
+
+This table demonstrates: 
+
+1. The `pbvar` ignores the two largest and smallest values. Therefore it is completely robust with two outliers and does not change its value. But with more than two outliers on one side (small or large) its performance cause havoc: The value of pbvar in the `Vector Z`-colummn is strikingly different from the other values.
+2. The `bivar` results decreases with adding outliers as it detects the outliers and ignores them.
+3. The `tauvar` is robust with one to two outliers of one side of the spectrum (small or large). With more than two small or large outliers it increases, but in moderate paces.
+
+
+
+### Some comments on measures of variaton
+
+Several methods of measuring the dispersion have been described. But: which one should be used? The answer depends in part of the type of problem and will be addressed in the subsequent chapters.
+
+
+## Detecting outliers
+
+Detecting unusally large or small values can be very important. The standard methods based on the sample mean and variance are sometimes highly unsatisfactory.
+
+
+### Method based on the mean and variance
+
+Declare outliers all values that are more than two standard deviations away from the mean. The reason why 2 is used, will be covered in the next chapter.
+
+$$\frac{|X - \bar{X}|}{s} > 2.$$ 
+
+This formula works fine in some cases notably if there are not many outliers inflating the sample mean and especially the sample standard devitation. The following three examples will demonstrate this problem of outlier detection, called _masking_.
+
+
+```{r outlier-detection-mean-variance}
+options("scipen" = 999, "digits" = 1) # disabling scientific notation in calculation
+x_out <-  c(2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 1000)
+y_out <- c(x_out, 10000)
+z_out <- c(2, 2, 3, 3, 3, 4, 4, 4, 100000, 100000)
+
+```
+
+To demonstrate _masking_ Wilcox has prepared three different sets of data.
+
+* **x_out** has one outlier: "2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 1000"
+* **y_out** has one "normal" and one extrem outlier: "2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 1000, 10000"
+* **z_out** has two extrem outliers: "2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 100000, 100000"
+
+| # | Vector | Outlier | Sample mean X | Sample sd  _s_          | > 2 sd?                  |
+|--:|:-------|--------:|--------------:|--------------:|-------------------------:|
+| 1 | x_out  | 10^3^    | `r mean(x_out)` | `r sd(x_out)` | `r abs(1000 - mean(x_out)) / sd(x_out)`
+| 2 | y_out<sub>1</sub>  | 10^3^    | `r mean(y_out)` | `r sd(y_out)` | `r abs(1000 - mean(y_out)) / sd(y_out)`
+| 3 | y_out<sub>2</sub>  | 10^4^    | `r mean(y_out)` | `r sd(y_out)` | `r abs(10000 - mean(y_out)) / sd(y_out)`
+| 4 | z_out  | 10^5^    | `r mean(z_out)` | `r sd(z_out)` | `r abs(100000 - mean(z_out)) / sd(z_out)`
+
+* **Line 1:** The value is > 2 sample standard deviation = correct detection of outlier.
+* **Line 2, 3:** The smaller outlier is masked by another more extreme outlier = no detection of the smaller outlier.
+* **Line 4:** Both extreme outlier are not detected!
+
+
+* **Line 1:** The value is > 2 sample standard deviation = correct detection of outlier.
+* **Line 2, 3:** The smaller outlier is masked by another more extreme outlier = no detection of the smaller outlier.
+* **Line 4:** Both extreme outlier are not detected!
+
+### Better for outlier detection: The MAD-Median rule
+
+The MAD-Median rule declares X as an outlier if
+
+$$\frac{|X - M|}{MADN} > 2.24$$
+
+If we now substitute the formal above with the values of line 4, we get `r (100000 - median(z_out)) / mad(z_out)`, which is much bigger than 2.24. So in this case both outliers are detected correctly.
+
+### R function `out(x)` provided by Wilcox
+
+The book supplies the function `out(x)` for detecting outliers without the masking problem. 
+
+```{r out-function-detecting-outliers}
+
+options(tinytex.verbose = TRUE)
+
+
+out <- function(x,
+                cov.fun = cov.mve,
+                xlab = "X",
+                ylab = "Y",
+                qval = .975,
+                crit = NULL,
+                plotit = FALSE,
+                ...) {
+    #
+    #  Search for outliers using robust measures of location and scatter,
+    #  which are used to compute robust analogs of Mahalanobis distance.
+    #
+    #  x is an n by p matrix or a vector of data.
+    #
+    #  The function returns the values flagged as an outlier plus
+    #  the (row) number where the data point is stored.
+    #  If x is a vector, out.id=4 indicates that the fourth observation
+    #  is an outlier and outval=123 indicates that 123 is the value.
+    #  If x is a matrix, out.id=4 indicates that the fourth row of
+    #  the matrix is an outlier and outval reports the corresponding
+    #  values.
+    #
+    #  The function also returns the distance of the
+    #  points identified as outliers
+    #  in the variable dis.
+    #
+    #  For bivariate data, if plotit=TRUE, plot points and circle outliers.
+    #
+    #  cov.fun determines how the measure of scatter is estimated.
+    #  Possible choices are
+    #  cov.mve (the MVE estimate)
+    #  cov.mcd (the MCD estimate)
+    #  covmba2 (the MBA or median ball algorithm)
+    #  rmba  (an adjustment of MBA suggested by D. Olive)
+    #  cov.roc (Rocke's TBS estimator)
+    #
+    #  plotit=FALSE used to avoid problems when other functions in WRS call
+    #  this function
+    #
+    library(MASS)
+    oldSeed <- .Random.seed
+    set.seed(12)
+    if (is.data.frame(x))
+        x = as.matrix(x)
+    if (is.list(x))
+        stop("Data cannot be stored in list mode")
+    nrem = nrow(as.matrix(x))
+    if (!is.matrix(x)) {
+        dis <- (x - median(x, na.rm = TRUE)) ^ 2 / mad(x, na.rm = TRUE) ^ 2
+        if (is.null(crit))
+            crit <- sqrt(qchisq(.975, 1))
+        vec <- c(1:length(x))
+    }
+    if (is.matrix(x)) {
+        mve <- cov.fun(elimna(x))
+        dis <- mahalanobis(x, mve$center, mve$cov)
+        if (is.null(crit))
+            crit <- sqrt(qchisq(.975, ncol(x)))
+        vec <- c(1:nrow(x))
+    }
+    dis[is.na(dis)] = 0
+    dis <- sqrt(dis)
+    chk <- ifelse(dis > crit, 1, 0)
+    id <- vec[chk == 1]
+    keep <- vec[chk == 0]
+    if (is.matrix(x)) {
+        if (ncol(x) == 2 && plotit) {
+            plot(x[, 1],
+                 x[, 2],
+                 xlab = xlab,
+                 ylab = ylab,
+                 type = "n")
+            flag <- rep(TRUE, nrow(x))
+            flag[id] <- FALSE
+            points(x[flag, 1], x[flag, 2])
+            if (sum(!flag) > 0)
+                points(x[!flag, 1], x[!flag, 2], pch = "*")
+        }
+    }
+    if (!is.matrix(x))
+        outval <- x[id]
+    if (is.matrix(x))
+        outval <- x[id, ]
+    n = nrow(as.matrix(x))
+    n.out = length(id)
+    assign(x = '.Random.seed',
+           value = oldSeed,
+           envir = .GlobalEnv)
+    list(
+        n = n,
+        n.out = n.out,
+        out.val = outval,
+        out.id = id,
+        keep = keep,
+        dis = dis,
+        crit = crit
+    )
+}
+
+out(z_out)
+
+
+```
+
+
+`out(x)` returns a list, where unfortunately not all parameter are explained. But `$out.val` returns the value all outliers and `out.id` the positions of the outliers within the vector. Trying with the above example of `z_out`: 
+
+* Number of detected outliers: `r out(z_out)$n.out`
+* The detected outliers are: `r out(z_out)$out.val` 
+* Position of detected outliers: `r out(z_out)$out.id`.
+
+The function `out(x)` detects both outliers and avoids _masking_.
+
+### Boxplot
+
+Another method to detect outlier is a graphical summary provided by a boxplot.
+
+***
+
+<center>
+![Ruediger85/CC-BY-SA-3.0/Wikimedia Commons](images/boxplot-min.png)
+Ruediger85/CC-BY-SA-3.0/Wikimedia Commons
+</center>
+
+***
+
+The end of the whiskers are the smallest and largest values not declared outliers and are called _adjacent values_. Because the IQR has finite sample breakdown point of 0.25. more than 25% of the data must be outliers before the problem of masking occurs.
+
+The bloxplot declares outliers if their positions is more than 1.5 IQRs from the lower respectively from the upper quartile.
+
+$$X < q1 - 1.5(IQR)$$ 
+or 
+
+$$X < q1 + 1.5(IQR)$$
+
+For a better understanding of the boxplot measures a comparison with the probability densitiy function of a normal distribution may be helpful:
+
+***
+
+<center>
+![By Jhguch at en.wikipedia, CC BY-SA 2.5, https://commons.wikimedia.org/w/index.php?curid=14524285](images/500px-Boxplot_vs_PDF.svg.png)
+</center>
+By Jhguch at en.wikipedia, CC BY-SA 2.5, https://commons.wikimedia.org/w/index.php?curid=14524285
+
+***
+
+There is a built-in R function `boxplot(x)`. For a demonstration I will use the `rivers` data again. 
+
+```{r boxplot-graphics}
+boxplot(rivers, notch = TRUE)
+boxplot(rivers, plot = FALSE)$out
+boxplot.stats(rivers)
+sort(boxplot.stats(rivers)$out)
+```
+
+You see several point outside the upper whisker (outside 1.5 IQR). These are the detected outliers. To get the numerical values of the boxplot Wilcox meentions `boxplot(x, plot = FALSE)` but I would recommend to use `boxplot.stats(x)`.
+
+```{r boxplot-stats}
+boxplot.stats(rivers)
+```
+
+Explanation of the result values:
+
+* **stats:** a vector of length 5, containing the extreme of the lower whisker, the lower ‘hinge’, the median, the upper ‘hinge’ and the extreme of the upper whisker.
+* **n:** the number of non-NA observations in the sample.
+* **conf:** the lower and upper extremes of the 'notch' This is important if you want to compare medians of different sample vectors. If they do not overlap than you can be 95% confident, that the median of the population do differ.
+* **out:** the values of any data points which lie beyond the extremes of the whiskers.
+
+To get just a sorted list of outliers, you can write `sort(boxplot.stats(rivers)$out)` which results in: `r sort(boxplot.stats(rivers)$out)`.
+
+### Modification of the boxplot rule for detecting outliers
+
+The proportion of detected outliers with the boxplot depends on the sample size. To correct this problem there is a modified boxplot rule:
+
+$$X > M + kIQR$$ 
+or 
+
+$$X > M - kIQR$$
+where
+
+$$k = \frac{17.63n - 23.64}{7.74n - 3.71}$$
+
+### R function `outbox(x)`
+
+Wilcos has developed a function with two different methods for detecting outliers:
+
+* **Parameter mbox = FALSE:** The function uses the standard boxplot rule.
+* **Parameter mbox = TRUE:** The function uses the modyfied boxplot rule.
+
+The following example demonstrated the reported results of the following table with the boxplot rule
+
+```{r outbox-function}
+outbox <- function(x,
+                   mbox = FALSE,
+                   gval = NA,
+                   plotit = FALSE,
+                   STAND = FALSE) {
+  #
+  # This function detects outliers using the
+  # boxplot rule, but unlike the R function boxplot,
+  # the ideal fourths are used to estimate the quartiles.
+  #
+  # Setting mbox=TRUE results in using the modification
+  # of the boxplot rule suggested by Carling (2000).
+  #
+  x <- x[!is.na(x)] # Remove missing values
+  if (plotit)
+    boxplot(x)
+  n <- length(x)
+  temp <- idealf(x)
+  if (mbox) {
+    if (is.na(gval))
+      gval <- (17.63 * n - 23.64) / (7.74 * n - 3.71)
+    cl <- median(x) - gval * (temp$qu - temp$ql)
+    cu <- median(x) + gval * (temp$qu - temp$ql)
+  }
+  if (!mbox) {
+    if (is.na(gval))
+      gval <- 1.5
+    cl <- temp$ql - gval * (temp$qu - temp$ql)
+    cu <- temp$qu + gval * (temp$qu - temp$ql)
+  }
+  flag <- NA
+  outid <- NA
+  vec <- c(1:n)
+  for (i in 1:n) {
+    flag[i] <- (x[i] < cl || x[i] > cu)
+  }
+  if (sum(flag) == 0)
+    outid <- NULL
+  if (sum(flag) > 0)
+    outid <- vec[flag]
+  keep <- vec[!flag]
+  outval <- x[flag]
+  n.out = sum(length(outid))
+  list(
+    out.val = outval,
+    out.id = outid,
+    keep = keep,
+    n = n,
+    n.out = n.out,
+    cl = cl,
+    cu = cu
+  )
+}
+
+outbox(rivers, mbox = FALSE)
+```
+
+The meaning of the different returned list values:
+
+* **out.val:** The values which are declared as outliers.
+* **out.id:** Location of the outliers within the vector.
+* **keep:** All the values not declared as outliers. This is useful if you want to store the vector without outliers in a new variable (e.g., `x_no_out = x_with_out[outbox(x_with_out)$keep]`)
+* **cl:** Lower starting point for values to be declared as outlier.
+* **cu:** Upper starting point for values to be declared as outlier.
+
+## Exercises
+
+### Exercise 1
+
+```{r ex-01}
+ex1 <- c(21, 36, 42, 24, 25, 36, 35, 49, 32)
+```
+
+Verify the following measures:
+
+| Dispersion measure | Reference value | My actual value          |
+|:-------------------|----------------:|-------------------------:|
+| Sample mean        | 33.33           | `r format(round(mean(ex1), 2), nsmall = 2)`             |
+| 20% trimmed mean   | 32.90           | `r format(round(mean(ex1, trim = 0.2), 2), nsmall = 2)` |
+| Median    | 35.00 | `r format(round(median(ex1), 2), nsmall = 2)`|
+
+### Exercise 2
+
+Replace the highest value from vector ex1 (= 49) with 200.
+
+```{r ex-2}
+ex2 <- c(21, 36, 42, 24, 25, 36, 35, 200, 32)
+```
+
+Verify the following measures:
+
+| Dispersion measure | Reference value | My actual value          |
+|:-------------------|----------------:|-------------------------:|
+| Sample mean        | 50.10           |  `r format(round(mean(ex2), 2), nsmall = 2)`             |
+| 20% trimmed mean   | 32.90           | `r format(round(mean(ex1, trim = 0.2), 2), nsmall = 2)` |
+| Median    | 35.00 | `r format(round(median(ex2), 2), nsmall = 2)`|
+
+Despite the much bigger value trimmed mean and median are resilient and have not changed, whereas the sample mean is not robust and has therefore changed.
+
+### Exercise 3
+
+For the data in exercise 1, what is the minimum number of observation that must be altered so that the 20% trimmed mean is greater than 1000?
+
+The vector ex1 has `length(ex1)` values (= `r length(ex1)`), 20% from every side = more than 1 but less than 2. So two values must be altered.
+
+```{r ex-3}
+ex3 <- c(21, 36, 10000, 24, 25, 36, 35, 10000, 32)
+
+```
+
+The 20% trimmed mean of ex3 = `r format(round(mean(ex3, trim = 0.2), 2), nsmall = 2)`.
