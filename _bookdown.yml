@@ -1,5 +1,9 @@
 book_filename: "MSSBS"
 delete_merged_file: true
 language:
+  label:
+    thm: 'R code snippet '
+    lem: 'Wilcox function '
+    cor: "Formula "
   ui:
     chapter_name: "Chapter "

@@ -2,15 +2,127 @@
 title: "Notes on Modern Statistics for the Social and Behavioral Sciences (MSSBS)"
 author: "Peter Baumgartner"
 date: "`r Sys.Date()`"
+output:
+  bookdown::html_document:
+    df_print: paged
+  pdf_document: default
+description: 'This book accompanies "Rand, W. (2017). Modern Statistics for the Social and Behavioral Sciences: A Practical Introduction, Second Edition (New edition). Boca Raton, FL: Taylor & Francis Inc.". My intention is to learn and explore the concepts and procedures taught from this introductory book. Please keep in mind that this book is just a kind of a training exercise for me. There will be no new insights presented and as I am still learning the basics of R and statistics you may find minsunderstandings and errors in my writings. For authoritative reference you have the consult the original book.'
 site: bookdown::bookdown_site
 documentclass: book
-bibliography: [book.bib, packages.bib]
+bibliography:
+- book.bib
+- packages.bib
 biblio-style: apalike
 link-citations: yes
-description: "This book accompanies 'Rand, W. (2017). Modern Statistics for the Social and Behavioral Sciences: A Practical Introduction, Second Edition (2 New edition). Boca Raton, FL: Taylor & Francis Inc.'. My intention is to learn and explore the concepts and procedures taught from this introductory book. Please keep in mind that this book is just a kind of a training exercise for me. There will be no new insights presented and as I am still learning the basics of R and statistics you may find minsunderstandings and errors in my writings. For authoritative reference you have the consult the original book."
+lof: True
+lot: True
 ---
 
-# Introduction {#intro}
+# Introduction
+
+
+```{r setup, echo=F}
+
+
+### setting up working environment
+### for details see: https://yihui.name/knitr/options/
+knitr::opts_chunk$set(
+        echo = T,
+        message = T,
+        error = T,
+        warning = T,
+        comment = '##',
+        highlight = T,
+        prompt = T,
+        strip.white = T,
+        tidy = T
+        )
+
+###########################################################
+
+## Preparing diverse index lists to put at the end of the book
+
+## theorem (R Code Snippets)
+thm_list = list()
+knitr::knit_hooks$set(engine = function(before, options) {
+  if (before && options$engine == 'theorem') {
+    # collect theorems terms from options$name
+    thm_list[[options$label]] <<- options$name
+  }
+  NULL
+})
+
+## lemma (Wilcox Functions)
+lem_list = list()
+knitr::knit_hooks$set(engine = function(before, options) {
+  if (before && options$engine == 'lemma') {
+    # collect lemma terms from options$name
+    lem_list[[options$label]] <<- options$name
+  }
+  NULL
+})
+
+## corrolary (Formula)
+cor_list = list()
+knitr::knit_hooks$set(engine = function(before, options) {
+  if (before && options$engine == 'corrolary') {
+    # collect corrolary terms from options$name
+    cor_list[[options$label]] <<- options$name
+  }
+  NULL
+})
+
+
+## definition (Definition)
+def_list = list()
+knitr::knit_hooks$set(engine = function(before, options) {
+  if (before && options$engine == 'definition') {
+    # collect definition terms from options$name
+    def_list[[options$label]] <<- options$name
+  }
+  NULL
+})
+
+## example (Example)
+exm_list = list()
+knitr::knit_hooks$set(engine = function(before, options) {
+  if (before && options$engine == 'example') {
+    # collect example terms from options$name
+    exm_list[[options$label]] <<- options$name
+  }
+  NULL
+})
+
+## exercise (Exercise)
+exr_list = list()
+knitr::knit_hooks$set(engine = function(before, options) {
+  if (before && options$engine == 'exercise') {
+    # collect exercise terms from options$name
+    exr_list[[options$label]] <<- options$name
+  }
+  NULL
+})
+
+## lemma (Wilcox Functions)
+lem_list = list()
+knitr::knit_hooks$set(engine = function(before, options) {
+  if (before && options$engine == 'lemma') {
+    # collect lemma terms from options$name
+    lem_list[[options$label]] <<- options$name
+  }
+  NULL
+})
+
+
+freeze <- ls()
+
+## Miscellanous
+
+# disabling scientific notation in calculation
+options("scipen" = 999, "digits" = 1) 
+
+```
+
 
 This chapter presents my motiviation to write this book besides some requirements and starting points so that you can follow the following chapters on your own.
 
@@ -20,69 +132,177 @@ This book collects my excerpts and personal notes on
 
 > Rand, W. (2017). Modern Statistics for the Social and Behavioral Sciences: A Practical Introduction, Second Edition (2 New edition). Boca Raton, FL: Taylor & Francis Inc.
 
-Please keep in mind that this book is just a kind of a training exercise for me. There will be no new insights presented and as I am still learning the basics of R and statistics you may find minsunderstandings and errors in my writings. For authoritative reference you have the consult the original book.  
+Please keep in mind that this book is just a kind of a training exercise for me. There will be no new insights presented and as I am still learning the basics of R and statistics you may find minsunderstandings and errors in my writings. For authoritative reference you have to consult the original book.  
 
 With this book I pursue three personal learning goals:
 
-* To get more experience with the bookdown package.
 * To get more practice with R, the free software environment for statistical computing and graphics.
 * To learn more about modern statistics for the social sciences to get at least an intermediate practical knowledge for developing my own data analysis projects.
+* To get more experience with the bookdown package.
 
 ## Web pages
+
+The book (and therefore my notes as well) uses the following resources:
 
 * **Homepage:** https://dornsife.usc.edu/cf/labs/wilcox/wilcox-faculty-display.cfm
 * **Data:** https://dornsife.usc.edu/labs/rwilcox/datasets/
 * **Software:** https://dornsife.usc.edu/labs/rwilcox/software/
 * **Solutions:** https://dornsife.usc.edu/assets/sites/239/docs/CRC_answers.pdf
 * **Errata**: https://dornsife.usc.edu/assets/sites/239/docs/CRC_2nd_Ed_errata.pdf
-* **GitHub WRS**: https://raw.githubusercontent.com/nicebread/WRS/master/pkg/R/Rallfun-v36.R
-* **GitHub WRS2**: https://github.com/cran/WRS2/tree/master/R
-* **GitHub WRS3**: https://github.com/mrxiaohe/WRScpp
-
+* **GitHub WRS-Text**: https://dornsife.usc.edu/assets/sites/239/docs/Rallfun-v37.txt (Sept. 2019)
+* **GitHub WRS-Github**: https://github.com/nicebread/WRS/tree/master/pkg (v0.36, June 2016)
+* **GitHub WRS2-CRAN**: https://github.com/cran/WRS2/tree/master/R (v0.36, 2019-06-05, only selection of functions but with Help Pages)
+* **GitHub WRS3**: https://github.com/mrxiaohe/WRScpp (couldn't install: error: cannot open file 'man': No such file or directory)
+* **New Functions**: https://dornsife.usc.edu/assets/sites/239/docs/updatev4_info.pdf
 
 ## Software (R Packages)
 
-There are three different ways to install the software accompanying the book:
+To use the software accompanying the book is a little bit complicated as there exist three different options each with their advantages and disadvantages.
 
-### All functions
+### Textfile with all functions
 
-The current release (2019-08-03) `Software/Rfunall-v36.txt` is a textfile and has to be sourced. It is the most updated version and easy to install. It has the disadvantage that no help files are available. But whenever you call the function without parenthesis from the console, the source code with summarized information on the top is displayed. 
+The current release (Sept. 2019) `Rallfun-v37.txt` is a [textfile](https://dornsife.usc.edu/assets/sites/239/docs/Rallfun-v37.txt) and should be sourced with `source_url("https://dornsife.usc.edu/assets/sites/239/docs/Rallfun-v37.txt")`. It is the most updated version. It has the disadvantage that no help files are available. But most functions called without parenthesis from the console display the source code which includes on the top a summarized information about the function and its parameters..
 
-As I see it, an additional disadvantage is that sourcing all functions at the same time is cluttering up the global environment (workspace) and needs a lot of working memory too. So I will not load the whole file, but copy & paste those functions I will immediately need.
+To source the huge file will take some time and generates an error: `Error in eval(ei, envir) : object 'splotg5' not found`. Version v36 has still worked. It turned out that the function `splotg5()` was missing. After I copied it form version v36 the error message disappeared. 
+
+The many functions not only cluttered up the global environment (workspace) but needed too much of working memory too.  Memory problems of this huge file (> 2 MB) practically prevents working with it. So I will not load the whole file, but copy & paste the needed functions into a separate R script. I will create for every chapter a special environment named `wilcox` to prevent clogging the workspace (the Global Environment).
+
+I have converted the `.txt` extension to an `.R` file. Loading `Rallfun-v37.R` into RStudio displayed a message that several packages (with their dependencies) needed to be installed:
+
+> install.packages(c("ddalpha", "gbm", "ICSOutlier", "mboost", "mrfDepth", "neuralnet", "rankFD", "tseries"))
+also installing the dependencies ‘TTR’, ‘ICS’, ‘stabs’, ‘nnls’, ‘Deriv’, ‘quantmod’
+
+After this installation I have the 2 MB file broken up in three different smaller files. Then I have reformated the code with CMD-SHIFT-A. Even with these smaller files I had to partitioned the code I wanted to reformat.
 
 ### GitHub Version
 
-You can download the `WRS Package` from https://github.com/nicebread/WRS form Github, where you can also find the details of the installation process. (I am not sure, but the installation process seems more cumbersome --  at least when you have to download all the dependent and suggested packages manually. But I believe most of these packages would be installed automatically.)
+You can download the `WRS Package` from https://github.com/nicebread/WRS from Github, where you can also find the details of the installation process. (I am not sure, but the installation process seems more cumbersome --  at least when you have to download all the dependent and suggested packages manually. But I believe most of these packages would be installed automatically.)
 
-The Github version is not always up-to-date, but at the time of this writing (2019-08-03), it has already installed the current Version v36. On Github, you will also find instructions on the installation of the C++ version. The C++ functions in the package `WRScpp` may considerably shorten the executions times of some functions. But currently I have problems to innstall them. (See my [error report](https://github.com/mrxiaohe/WRScpp/issues/5).)
+The Github version is not always up-to-date, but at the time of this writing (2019-08-03), it has already installed Version v0.36. On Github, you will also find instructions on the installation of the C++ version. The C++ functions in the package `WRScpp` may considerably shorten the executions times of some functions. But currently I have problems to install them. (See my [error report](https://github.com/mrxiaohe/WRScpp/issues/5).)
 
-```{r install-github}
-# first: install dependent packages
-# I am going to use for easier installation the package `xfun`
-xfun::pkg_attach2("MASS", "akima", "robustbase", "devtools")
 
-# second: install suggested packages
-xfun::pkg_attach2("cobs", "robust", "mgcv", "scatterplot3d", "quantreg", "rrcov", "lars", "pwr", "trimcluster", "mc2d", "psych", "Rfit", "DepthProc", "class", "fda")
+```{theorem, label="title-install-package", cache=F, name="Install book packages with dependencies"}
+```
 
-# third: install an additional package which provides some C functions
-xfun::pkg_attach2("RcppArmadillo")
-# gets an error message: see https://github.com/mrxiaohe/WRScpp/issues/5
-# remotes::install_github("mrxiaohe/WRScpp", build_manual = TRUE, build_vignettes = TRUE)
+```{r install-packages, warning=F, message=F, cache=T}
 
-# fourth: install WRS
-if (!requireNamespace("xfun"))
-remotes::install_github("nicebread/WRS", subdir = "pkg", build_manual = TRUE, build_vignettes = TRUE)
+list.of.packages <- c("MASS", "akima", "robustbase", "devtools", "remote",
+                  "cobs", "robust", "mgcv", "scatterplot3d", "quantreg", 
+                  "rrcov", "lars", "pwr", "trimcluster", "mc2d",
+                  "psych", "Rfit", "DepthProc", "class", "fda",
+                  "RcppArmadillo")
+packages.to.install <-
+  list.of.packages[!(list.of.packages %in% installed.packages()[, "Package"])]
+packages.to.update <-
+  list.of.packages[(list.of.packages %in% installed.packages()[, "Package"])]
+if (length(packages.to.update))
+  update.packages(packages.to.update)
+if (length(packages.to.install))
+  install.packages(packages.to.install)
+# 
+# if (!require("MASS"))
+#         {install.packages("MASS", repos = 'http://cran.wu.ac.at/')
+#         library(MASS)}
+# 
+# # first: install dependent packages
+# # I am going to use for easier installation the package `xfun`
+# xfun::pkg_attach2("MASS", "akima", "robustbase", "devtools")
+# 
+# # second: install suggested packages
+# xfun::pkg_attach2("cobs", "robust", "mgcv", "scatterplot3d", 
+#                   "quantreg", "rrcov", "lars", "pwr", "trimcluster", "mc2d",
+#                   "psych", "Rfit", "DepthProc", "class", "fda")
+# 
+# # third: install an additional package which provides some C functions
+# xfun::pkg_attach2("RcppArmadillo")
+# 
+# # next line gets an error message: see https://github.com/mrxiaohe/WRScpp/issues/5
+# # remotes::install_github("mrxiaohe/WRScpp", 
+# #                         build_manual = TRUE, build_vignettes = TRUE)
+# 
+# # fourth: install WRS
+if (!requireNamespace("WRS"))
+  remotes::install_github(
+    "nicebread/WRS",
+    subdir = "pkg",
+    build_manual = TRUE,
+    build_vignettes = TRUE
+    
+  )
 
 ```
 
+```{r}
+list.of.packages <- c("ggplot2", "Rcpp", "WRS2")
+packages.to.install <-
+  list.of.packages[!(list.of.packages %in% installed.packages()[, "Package"])]
+packages.to.update <-
+  list.of.packages[(list.of.packages %in% installed.packages()[, "Package"])]
+if (length(packages.to.updatel))
+  update.packages(packages.to.update)
+if (length(packages.to.install))
+  install.packages(packages.to.install)
+
+```
+
+
 ### Install CRAN version
 
-The appeal of this limited edition are the included help files. There is an long article^[Mair, P., & Wilcox, R. (2019). Robust statistical methods in R using the WRS2 package. Behavior Research Methods. https://doi.org/10.3758/s13428-019-01246-w ] with a description of the functions currently available. (Here is the link for [direct access to the PDF](https://dornsife.usc.edu/assets/sites/239/docs/WRS2.pdf).)
+The appeal of this limited edition of 37 functions are the included help files. There is an long article^[Mair, P., & Wilcox, R. (2019). Robust statistical methods in R using the WRS2 package. Behavior Research Methods. https://doi.org/10.3758/s13428-019-01246-w ] with a description of the functions currently available. (Here is the link for [direct access to the PDF](https://dornsife.usc.edu/assets/sites/239/docs/WRS2.pdf).)
 
-```{r istall-cran}
+
+```{lemma, label="title-install-cran", cache=F, name="Install CRAN version"}
+```
+
+```{r install-cran}
+xfun::loadable("WRS2")
 xfun::pkg_attach2("WRS2")
 ```
 
 I have installed the R package from CRAN and will compare it with the full version. Whenever the need arises e.g., whenever I need functions not available in the CRAN version, I will copy & paste the source code of the appropriate functions into the R code chunk and load them.
 
+## Summary
+
+There are several options to load the required packages. Each has some advantages and disadvantages:
+
+| Option | Advantage | Disadvantage |
+|--------|-----------|--------------|
+| `Rallfun-v??.txt` | All functions <br />Up to date, latest version <br/>Help infos available | Memory problem <br>Not included as R packages <br/>Obstructs workspace <br />Help infos as comments baked into function |
+| `WRS` (Github) | Many functions <br />R package | Not all functions<br/>Not obvious which are missing<br />No help pages |
+| `WRS2` (CRAN) | R package<br />Help files | Only a small subset of functions |
+
+To get a better overview which functions are used and to have full control of using it I will use a double strategy to implement these functions of the Wilcox book: 
+
+1) I will use the CRAN package `WRS2`. It is convenient to work with an R packages with help files and a detailed vignette as PDF file.
+
+2) To supplement those functions which are missing in `WRS2` I will provide R scripts per chapter with all functions needed for the relevant chapter. These functions are sourced into a special `wilcox` environment to prevent clogging of the workspace.
+
+3) I will store the full list of loaded packages (N = `r length(.packages())`) into a new generated `data` directory for future reference.
+
+```{theorem, label="title-save-pkg-list", cache=F, name="Save a list of all loaded packages of this chapter"}
+```
+```{r save-pkgs-list}
+if (!dir.exists("data")) dir.create("data")
+saveRDS(data.frame(.packages()), file.path("data/pkglist.rds"))
+```
+
+
+4) Finally at the end of each chapter I will remove all non-base packages and clean up the working space so that I can start each chapter from scratch without side effects.
+
+```{theorem, label="title-cleanup", cache=F, name="Detach all non-base packages and clean workspace"}
+```
+
+```{r cleanup, warning=FALSE, results='hide'}
+suppressWarnings(lapply(names(sessionInfo()$otherPkgs),
+                        function(pkgs)
+                          detach(
+                            paste0('package:', pkgs),
+                            character.only = T,
+                            unload = T,
+                            force = T
+                          )))
+
+
+rm(list = setdiff(ls(), freeze))
+```
 

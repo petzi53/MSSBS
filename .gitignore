@@ -2,3 +2,11 @@
 .Rhistory
 .RData
 .Ruserdata
+.DS_Store
+*.pdf
+*.nb.html
+*.html
+*.dcf
+_mssbs-*
+_book
+_bookdown_files/MSSBS_cache/

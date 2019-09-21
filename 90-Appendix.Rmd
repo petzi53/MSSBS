@@ -1,0 +1,47 @@
+
+# Appendix Indices {-}
+
+## R Code Snippets {-}
+
+```{r echo=FALSE, results='asis', engine.opts='theorem'}
+thm_list1 = unlist(thm_list1)
+cat(sprintf('\\@ref(thm:%s): %s', names(thm_list1), thm_list1), sep = '\n<br />')
+```
+
+## Wilcox Functions {-}
+
+```{r echo=FALSE, results='asis'}
+lem_list = unlist(lem_list)
+cat(sprintf('\\@ref(lem:%s): %s', names(lem_list), lem_list), sep = '\n<br />')
+```
+
+
+## Formulas {-}
+
+```{r echo=FALSE, results='asis'}
+cor_list = unlist(cor_list)
+cat(sprintf('\\@ref(cor:%s): %s', names(cor_list), cor_list), sep = '\n<br />')
+```
+
+## Definitions {-}
+
+```{r echo=FALSE, results='asis'}
+def_list = unlist(def_list)
+cat(sprintf('- \\@ref(def:%s) %s', names(def_list), def_list), sep = '\n')
+```
+
+
+## Examples {-}
+
+```{r echo=FALSE, results='asis'}
+exm_list = unlist(exm_list)
+cat(sprintf('\\@ref(exm:%s): %s', names(exm_list), exm_list), sep = '\n<br />')
+```
+
+## Exercises {-}
+
+```{r echo=FALSE, results='asis'}
+exr_list = unlist(exr_list)
+cat(sprintf('\\@ref(exr:%s): %s', names(exr_list), exr_list), sep = '\n<br />')
+```
+
