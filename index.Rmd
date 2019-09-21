@@ -2,12 +2,12 @@
 title: "Notes on Modern Statistics for the Social and Behavioral Sciences (MSSBS)"
 author: "Peter Baumgartner"
 date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
 output:
   bookdown::html_document:
     df_print: paged
   pdf_document: default
 description: 'This book accompanies "Rand, W. (2017). Modern Statistics for the Social and Behavioral Sciences: A Practical Introduction, Second Edition (New edition). Boca Raton, FL: Taylor & Francis Inc.". My intention is to learn and explore the concepts and procedures taught from this introductory book. Please keep in mind that this book is just a kind of a training exercise for me. There will be no new insights presented and as I am still learning the basics of R and statistics you may find minsunderstandings and errors in my writings. For authoritative reference you have the consult the original book.'
-site: bookdown::bookdown_site
 documentclass: book
 bibliography:
 - book.bib
@@ -181,7 +181,7 @@ You can download the `WRS Package` from https://github.com/nicebread/WRS from Gi
 The Github version is not always up-to-date, but at the time of this writing (2019-08-03), it has already installed Version v0.36. On Github, you will also find instructions on the installation of the C++ version. The C++ functions in the package `WRScpp` may considerably shorten the executions times of some functions. But currently I have problems to install them. (See my [error report](https://github.com/mrxiaohe/WRScpp/issues/5).)
 
 
-```{theorem, label="title-install-package", cache=F, name="Install book packages with dependencies"}
+```{theorem, label="title-install-package",  name="Install book packages with dependencies"}
 ```
 
 ```{r install-packages, warning=F, message=F, cache=T}
@@ -199,6 +199,8 @@ if (length(packages.to.update))
   update.packages(packages.to.update)
 if (length(packages.to.install))
   install.packages(packages.to.install)
+
+
 # 
 # if (!require("MASS"))
 #         {install.packages("MASS", repos = 'http://cran.wu.ac.at/')
@@ -220,6 +222,8 @@ if (length(packages.to.install))
 # # remotes::install_github("mrxiaohe/WRScpp", 
 # #                         build_manual = TRUE, build_vignettes = TRUE)
 # 
+
+
 # # fourth: install WRS
 if (!requireNamespace("WRS"))
   remotes::install_github(
@@ -227,23 +231,10 @@ if (!requireNamespace("WRS"))
     subdir = "pkg",
     build_manual = TRUE,
     build_vignettes = TRUE
-    
   )
 
 ```
 
-```{r}
-list.of.packages <- c("ggplot2", "Rcpp", "WRS2")
-packages.to.install <-
-  list.of.packages[!(list.of.packages %in% installed.packages()[, "Package"])]
-packages.to.update <-
-  list.of.packages[(list.of.packages %in% installed.packages()[, "Package"])]
-if (length(packages.to.updatel))
-  update.packages(packages.to.update)
-if (length(packages.to.install))
-  install.packages(packages.to.install)
-
-```
 
 
 ### Install CRAN version
@@ -251,7 +242,7 @@ if (length(packages.to.install))
 The appeal of this limited edition of 37 functions are the included help files. There is an long article^[Mair, P., & Wilcox, R. (2019). Robust statistical methods in R using the WRS2 package. Behavior Research Methods. https://doi.org/10.3758/s13428-019-01246-w ] with a description of the functions currently available. (Here is the link for [direct access to the PDF](https://dornsife.usc.edu/assets/sites/239/docs/WRS2.pdf).)
 
 
-```{lemma, label="title-install-cran", cache=F, name="Install CRAN version"}
+```{lemma, label="title-install-cran",  name="Install CRAN version"}
 ```
 
 ```{r install-cran}
@@ -277,19 +268,19 @@ To get a better overview which functions are used and to have full control of us
 
 2) To supplement those functions which are missing in `WRS2` I will provide R scripts per chapter with all functions needed for the relevant chapter. These functions are sourced into a special `wilcox` environment to prevent clogging of the workspace.
 
-3) I will store the full list of loaded packages (N = `r length(.packages())`) into a new generated `data` directory for future reference.
+3) I will store the full list of loaded packages (N = `r length(.packages())`) into a new generated `_mssbs-data` directory for future reference.
 
-```{theorem, label="title-save-pkg-list", cache=F, name="Save a list of all loaded packages of this chapter"}
+```{theorem, label="title-save-pkg-list",  name="Save a list of all loaded packages of this chapter"}
 ```
 ```{r save-pkgs-list}
-if (!dir.exists("data")) dir.create("data")
-saveRDS(data.frame(.packages()), file.path("data/pkglist.rds"))
+if (!dir.exists("_data")) dir.create("_mssbs-data")
+saveRDS(data.frame(.packages()), file.path("_mssbs-data/pkglist.rds"))
 ```
 
 
 4) Finally at the end of each chapter I will remove all non-base packages and clean up the working space so that I can start each chapter from scratch without side effects.
 
-```{theorem, label="title-cleanup", cache=F, name="Detach all non-base packages and clean workspace"}
+```{theorem, label="title-cleanup",  name="Detach all non-base packages and clean workspace"}
 ```
 
 ```{r cleanup, warning=FALSE, results='hide'}

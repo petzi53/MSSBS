@@ -50,7 +50,7 @@ Take for example an individual reporting that the median amount of earnings over
 100,000, 100,000, 100,000, 100,000, 100,000, 100,000, 100,000, 100,000, 100,000, -1.000,000. At the end of the 10 year period the individuam has earned nothing but in fact lost 100,000. Here the long term amount of earning, as expressed in the mean, is important.
 
 
-```{example, label= "rel-mean", cache=F, name="The mean is still relevant"}
+```{example, label= "rel-mean",  name="The mean is still relevant"}
 ```
 
 ```{r example-2.1, results='hold'}
@@ -140,7 +140,7 @@ with(wilcox, {
 })
 ```
 
-```{example, cache=F, name="Compare mean, median, trimmed and winsorized mean"}
+```{example,  name="Compare mean, median, trimmed and winsorized mean"}
 
 
 Values unsorted: $12, 45, 23, 79, 19, 92, 30, 58, 132, 1000$, 
@@ -154,7 +154,7 @@ But keep in mind that there are situation where the mean is still a very relevan
 
 
 
-```{lemma, cache=F, name="Comparison of mean, median, trimmed and winsorized mean"}
+```{lemma,  name="Comparison of mean, median, trimmed and winsorized mean"}
 ```
 
 ```{r compare-trim-winsorized-mean}
@@ -206,7 +206,7 @@ There are many alternative proposals for the computation of the IQR, slightly al
 
 A more complicated calculation uses the so-called lower and upper _ideal fourth_.
 
-```{definition, label="ideal-fourth", cache=F, name="Ideal fourth"}
+```{definition, label="ideal-fourth",  name="Ideal fourth"}
 
 $$q_{1} = (1 -h)X_{j} + hX_{j+1}$$
 
@@ -225,7 +225,7 @@ $$IQR = q_{2} - q_{1}$$
 
 
 
-```{example, cache=F, name="Calculation of the ideal fourth"}
+```{example,  name="Calculation of the ideal fourth"}
 
 
 Wilcox shows the process of the computation with the following 12 values: $-29.6, -20.9, -19.7, -15.4, -8.0, -4.3, 0.8, 2.0, 6.2, 11.2, 25.0$
@@ -252,7 +252,7 @@ $$IQR = 4.45 - (-17.9) = 22.35$$
 With `idealf(x)` respectively `idealfIQR` using the ideal fourths a tenth function was especially written for the Wilcox book. To use this Wilcox measure I had to copy and load the corresponding functions `idealf`, `idealfIQR` from the `Software/Rallfun-v36.txt` and additionally `elimna` (called by `idealfIQR`), which is only located on the github version of [WRS2](https://github.com/cran/WRS2/blob/master/R/elimna.R).
 
 
-```{lemma, cache=F, name="Function to calculate the ideal fourth"}
+```{lemma,  name="Function to calculate the ideal fourth"}
 ```
 
 
@@ -288,7 +288,7 @@ with(wilcox, {
 
 
 
-```{example, cache=F, name="Compare different types of quantiles and IQRs"}
+```{example,  name="Compare different types of quantiles and IQRs"}
 ```
 
 ```{r data-to-compare-quantiles}
@@ -355,7 +355,7 @@ with(wilcox, {
 ```
 
 
-```{example cache=F, name="Calcuation of the Winsorized Variance"}
+```{example  name="Calcuation of the Winsorized Variance"}
 ```
 
 
@@ -374,7 +374,7 @@ The default 20% winsorized variance calculated with `winvar(x)` = **`r var_win_0
 The median absolute deviation (MAD) is another measure of dispersions and plays an important role when trying to detect outliers. 
 
 
-```{definition label="MAD", cache=F, name="Median Absolute Deviation (MAD)"}
+```{definition label="MAD",  name="Median Absolute Deviation (MAD)"}
 
 There are three steps for its calculation. I will demonstrate these three steps with the figures from the example above,. eg., with the values $12, 45, 23, 79, 19, 92, 30, 58, 132$:
   
@@ -392,7 +392,7 @@ For reasons related to the normal distribution, MAD is typically corrected by a 
 
 R has a built-in function `mad()` which calculates MADN.
 
-```{example, label="calc-mad", cache=F, name="Calculation of the Median Absolute Deviation with `mad`"}
+```{example, label="calc-mad",  name="Calculation of the Median Absolute Deviation with `mad`"}
 ```
 
 
@@ -418,7 +418,7 @@ The R-functions for these measures are:
 * Tau measure of scale: `tauvar()`
 * Translated Biweight S: `(tbs())$var`
 
-```{lemma, label="other-disp-measures", cache=F, name="Other dispersion measures"}
+```{lemma, label="other-disp-measures",  name="Other dispersion measures"}
 ```
 
 ```{r other_dispersions-measures}
@@ -813,7 +813,7 @@ elimna <- function(m) {
 
 
 
-```{example, label="comp-disp-measures", cache=F, name="Comparison of other robust measures of variation"}
+```{example, label="comp-disp-measures",  name="Comparison of other robust measures of variation"}
 ```
 
 
@@ -882,14 +882,14 @@ Detecting unusally large or small values can be very important. The standard met
 
 Declare as outliers all values that are more than two standard deviations away from the mean. The reason why the factor two is used, will be covered in the next chapter.
 
-```{definition, label="std-method", cache=F, name="Method for detecting outliers based on the mean and the variance"}
+```{definition, label="std-method",  name="Method for detecting outliers based on the mean and the variance"}
 ```
 
 $$\frac{|X - \bar{X}|}{s} > 2.$$ 
 
 This formula works fine in some cases notably if there are not many outliers inflating the sample mean and especially the sample standard deviation. The following three examples will demonstrate one problem of outlier detection, called _masking_.
 
-```{lemma, cache=F, name="Demonstration data for masking of outliers"}
+```{lemma,  name="Demonstration data for masking of outliers"}
 ```
 
 ```{r outlier-detection-mean-variance}
@@ -925,7 +925,7 @@ Table: (\#tab:masking-outliers) Demonstrating the masking of outliers
 
 The MAD-Median rule declares X as an outlier if
 
-```{definition, label="mad-median", cache=F, name="The MAD-Median rule"}
+```{definition, label="mad-median",  name="The MAD-Median rule"}
 ```
 $$\frac{|X - M|}{MADN} > 2.24$$
 
@@ -935,7 +935,7 @@ If we now substitute the formula above with the values of line 4, we get `r (100
 
 Wilcox suggests in his book the new programmed function `out(x)` for detecting outliers without the masking problem. 
 
-```{lemma, cache=F, name="outlier function `out(x)`"}
+```{lemma,  name="outlier function `out(x)`"}
 ```
 
 ```{r out-function-detecting-outliers}
@@ -1042,7 +1042,7 @@ with(wilcox, {
 })
 ```
 
-```{lemma, cache=F, name="Demonstrate results of function `out(x)`"}
+```{lemma,  name="Demonstrate results of function `out(x)`"}
 ```
 
 ```{r}
@@ -1067,7 +1067,7 @@ The function `out(x)` detects both outliers and avoids _masking_.
 Another method to detect outlier is a graphical summary provided by a boxplot.
 To get the graphic with `bookdown` displayed I use the folloring code snippet:
 
-```{lemma, cache=F, name="How to display the following external image file?"}
+```{lemma,  name="How to display the following external image file?"}
 ```
 
 
@@ -1091,7 +1091,7 @@ The end of the whiskers are the smallest and largest values not declared outlier
 
 The bloxplot declares outliers if their positions is more than 1.5 IQRs from the lower respectively from the upper quartile.
 
-```{definition, label="boxplot-outliers", cache=F, name="How bloxpots declare outliers"}
+```{definition, label="boxplot-outliers",  name="How bloxpots declare outliers"}
 
 ```
 
@@ -1113,7 +1113,7 @@ knitr::include_graphics("images/500px-Boxplot_vs_PDF.svg.png")
 There is a built-in R function `boxplot(x)`. For a demonstration I will use the `rivers` data again. 
 
 
-```{lemma, cache=F, name="Demonstration of the built-in R function `boxplot(x)`"}
+```{lemma,  name="Demonstration of the built-in R function `boxplot(x)`"}
 ```
 
 
@@ -1125,7 +1125,7 @@ boxplot(rivers, notch = TRUE, ylab = "Length in km", xlab = "Rivers")
 
 You see several point outside the upper whisker (outside 1.5 IQR). These are the detected outliers. To get the numerical values of the boxplot Wilcox mentions `boxplot(x, plot = FALSE)` but I would recommend to use `boxplot.stats(x)`.
 
-```{lemma, cache=F, name="Outliers values with the boxplot rule using `boxplot` and `boxplot.stats`"}
+```{lemma,  name="Outliers values with the boxplot rule using `boxplot` and `boxplot.stats`"}
 ```
 
 ```{r boxplot-data}
@@ -1149,7 +1149,7 @@ To get just a sorted list of outliers, you can write `sort(boxplot.stats(rivers)
 The proportion of detected outliers with the boxplot depends on the sample size. It is higher where the sample size is small. To correct this problem there is a modified boxplot rule:
 
 
-```{definition, label="mod-boxplot", cache=F, name="Detecting outliers with modified boxplot rule"}
+```{definition, label="mod-boxplot",  name="Detecting outliers with modified boxplot rule"}
 ```
 
 
@@ -1167,7 +1167,7 @@ $$k = \frac{17.63n - 23.64}{7.74n - 3.71}$$
 Wilcos has developed a function `outbox(x)` using the two different methods for detecting outliers with the boxplot method (standard and modified version).
 
 
-```{lemma, cache=F, name="Detecting outliers with special funtion `outbox(x)`"}
+```{lemma,  name="Detecting outliers with special funtion `outbox(x)`"}
 ```
 
 ```{r outbox-function}
@@ -1234,7 +1234,7 @@ Changing the parameter of mbox results in the two different methods for detectin
 * **Parameter mbox = FALSE:** The function uses the standard boxplot rule.
 * **Parameter mbox = TRUE:** The function uses the modyfied boxplot rule.
 
-```{example, label="outbox", cache=F, name="Demonstration of the `outbox` function"}
+```{example, label="outbox",  name="Demonstration of the `outbox` function"}
 ```
 
 ```{r demo-outbox-function}
@@ -1251,7 +1251,7 @@ The meaning of the different returned list values:
 * **cl:** Lower starting point for values to be declared as outlier.
 * **cu:** Upper starting point for values to be declared as outlier.
 
-```{lemma, label="cmp-outbox", cache=F, name="Compare detection of outliers with different bloxplot rules"}
+```{lemma, label="cmp-outbox",  name="Compare detection of outliers with different bloxplot rules"}
 ```
 
 ```{r compare-outbox}
@@ -1301,7 +1301,7 @@ $$\frac{1.26(MADN)(u-l)}{n-u-l}$$
 For the two abvove mentioned measures are special functions in the `WRS2` package provided. 
 
 
-```{lemma, label="one-step-and-mom-function", cache=F, name="Onestep and Modified One-stem M-Estimator (MOM) "}
+```{lemma, label="one-step-and-mom-function",  name="Onestep and Modified One-stem M-Estimator (MOM) "}
 ```
 
 ```{r one-step-and-mom}
@@ -1355,7 +1355,7 @@ Wilcox illustrates both measures with the following data set:
 
 $$77, 87, 88, 114, 151, 210, 219, 246, 253, 262, 296, 299, 306, 376, 428, 515, 666, 1310, 2611$$
 
-```{example, label="onestep-mom", cache=F, name="Comparing functions `onestep` and `mom`"}
+```{example, label="onestep-mom",  name="Comparing functions `onestep` and `mom`"}
 ```
 
 ```{r calc-onestep-mom}
@@ -1378,7 +1378,7 @@ Historgrams are classical graphical tools for summarizing data. it simply groups
 
 The following two graphics compares the standard R `graphics` with the newer specialized `ggplot2` package. The many program lines for the `ggplot2` graphics is necessary to get a similar result as with the simple `hist()` command. This greater complexity is an advantage as it allows for a much more detailed control of the graphics appearance.
 
-```{example, label="hist-comp", cache=F, name="Comparison of Histograms with `hist` and `ggplot`."}
+```{example, label="hist-comp",  name="Comparison of Histograms with `hist` and `ggplot`."}
 ```
 
 ```{r hist-t5-mismatch-score, fig.cap='Left: Historgram with `hist`. Right: Dame Histogram recreated with `ggplot', fig.show='hold', out.width='50%', fig.width=5, fig.height=4}
@@ -1414,7 +1414,7 @@ ggplot(df, aes(x = value)) +
 
 Instead of present the absolute values it might sometimes better to use the height of a spike indicating the relative values.
 
-```{lemma, label="splot-function", cache=F, name="Splot = Frequency Plot with Spikes"}
+```{lemma, label="splot-function",  name="Splot = Frequency Plot with Spikes"}
 ```
 
 ```{r splot}
@@ -1482,7 +1482,7 @@ with(wilcox, {
 
 
 
-```{example, label="rel-freq", cache=F, name="Demonstration of the r `hist` function"}
+```{example, label="rel-freq",  name="Demonstration of the r `hist` function"}
 ```
 
 
@@ -1703,7 +1703,7 @@ ex3 <- c(21, 36, 10000, 24, 25, 36, 35, 10000, 32)
 The 20% trimmed mean of ex3 = `r format(round(mean(ex3, trim = 0.2), 2), nsmall = 2)`.
 
 
-```{theorem, label="clean-up-2", cache=F, name="Detach all non-base packages and clean workspace"}
+```{theorem, label="clean-up-2",  name="Detach all non-base packages and clean workspace"}
 ```
 
 ```{r cleanup2, warning=FALSE, results='hide'}
