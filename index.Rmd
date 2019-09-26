@@ -23,7 +23,6 @@ lot: True
 
 ```{r setup, echo=F}
 
-
 ### setting up working environment
 ### for details see: https://yihui.name/knitr/options/
 knitr::opts_chunk$set(
@@ -39,90 +38,50 @@ knitr::opts_chunk$set(
         )
 
 ###########################################################
-
-## Preparing diverse index lists to put at the end of the book
-
-## theorem (R Code Snippets)
+cor_list = list()
+def_list = list()
+exr_list = list()
+exm_list = list()
+lem_list = list()
 thm_list = list()
 knitr::knit_hooks$set(engine = function(before, options) {
-  if (before && options$engine == 'theorem') {
-    # collect theorems terms from options$name
-    thm_list[[options$label]] <<- options$name
-  }
-  NULL
-})
+    if ( before ) {
+        if ( options$engine == "theorem" ) {
+            thm_list[[options$label]] <<- options$name
+        } else if ( options$engine == "definition" ) {
+            def_list[[options$label]] <<- options$name
+        } else if ( options$engine == "corollary" ) {
+            cor_list[[options$label]] <<- options$name
+        } else if ( options$engine == "exercise" ) {
+            exr_list[[options$label]] <<- options$name
+        } else if ( options$engine == "lemma" ) {
+            lem_list[[options$label]] <<- options$name
+        } else if ( options$engine == "example" ) {
+            exm_list[[options$label]] <<- options$name
+        }
+    }
+    NULL
+}) 
 
-## lemma (Wilcox Functions)
-lem_list = list()
-knitr::knit_hooks$set(engine = function(before, options) {
-  if (before && options$engine == 'lemma') {
-    # collect lemma terms from options$name
-    lem_list[[options$label]] <<- options$name
-  }
-  NULL
-})
-
-## corrolary (Formula)
-cor_list = list()
-knitr::knit_hooks$set(engine = function(before, options) {
-  if (before && options$engine == 'corrolary') {
-    # collect corrolary terms from options$name
-    cor_list[[options$label]] <<- options$name
-  }
-  NULL
-})
+#######################################################################
+# load the huge R file with the special wilcox functions
+# prepare separate environment to prevent clogging of workspace
+allfun <- new.env()
+with(allfun, {source(file = "_mssbs-software/Rallfun.R", local = TRUE)})
 
 
-## definition (Definition)
-def_list = list()
-knitr::knit_hooks$set(engine = function(before, options) {
-  if (before && options$engine == 'definition') {
-    # collect definition terms from options$name
-    def_list[[options$label]] <<- options$name
-  }
-  NULL
-})
-
-## example (Example)
-exm_list = list()
-knitr::knit_hooks$set(engine = function(before, options) {
-  if (before && options$engine == 'example') {
-    # collect example terms from options$name
-    exm_list[[options$label]] <<- options$name
-  }
-  NULL
-})
-
-## exercise (Exercise)
-exr_list = list()
-knitr::knit_hooks$set(engine = function(before, options) {
-  if (before && options$engine == 'exercise') {
-    # collect exercise terms from options$name
-    exr_list[[options$label]] <<- options$name
-  }
-  NULL
-})
-
-## lemma (Wilcox Functions)
-lem_list = list()
-knitr::knit_hooks$set(engine = function(before, options) {
-  if (before && options$engine == 'lemma') {
-    # collect lemma terms from options$name
-    lem_list[[options$label]] <<- options$name
-  }
-  NULL
-})
-
-
+#######################################################################
+# Store all variables up to this line
+# Later generated variables will be deleted after end of each chapter
 freeze <- ls()
 
-## Miscellanous
+#######################################################################
+## Miscellanous other general settings
 
 # disabling scientific notation in calculation
 options("scipen" = 999, "digits" = 1) 
 
 ```
-
 
 This chapter presents my motiviation to write this book besides some requirements and starting points so that you can follow the following chapters on your own.
 
@@ -163,16 +122,15 @@ To use the software accompanying the book is a little bit complicated as there e
 
 The current release (Sept. 2019) `Rallfun-v37.txt` is a [textfile](https://dornsife.usc.edu/assets/sites/239/docs/Rallfun-v37.txt) and should be sourced with `source_url("https://dornsife.usc.edu/assets/sites/239/docs/Rallfun-v37.txt")`. It is the most updated version. It has the disadvantage that no help files are available. But most functions called without parenthesis from the console display the source code which includes on the top a summarized information about the function and its parameters..
 
-To source the huge file will take some time and generates an error: `Error in eval(ei, envir) : object 'splotg5' not found`. Version v36 has still worked. It turned out that the function `splotg5()` was missing. After I copied it form version v36 the error message disappeared. 
-
-The many functions not only cluttered up the global environment (workspace) but needed too much of working memory too.  Memory problems of this huge file (> 2 MB) practically prevents working with it. So I will not load the whole file, but copy & paste the needed functions into a separate R script. I will create for every chapter a special environment named `wilcox` to prevent clogging the workspace (the Global Environment).
-
 I have converted the `.txt` extension to an `.R` file. Loading `Rallfun-v37.R` into RStudio displayed a message that several packages (with their dependencies) needed to be installed:
 
 > install.packages(c("ddalpha", "gbm", "ICSOutlier", "mboost", "mrfDepth", "neuralnet", "rankFD", "tseries"))
 also installing the dependencies ‘TTR’, ‘ICS’, ‘stabs’, ‘nnls’, ‘Deriv’, ‘quantmod’
 
-After this installation I have the 2 MB file broken up in three different smaller files. Then I have reformated the code with CMD-SHIFT-A. Even with these smaller files I had to partitioned the code I wanted to reformat.
+To source the huge file will take some time and generates an error: `Error in eval(ei, envir) : object 'splotg5' not found`. Version v36 has still worked. It turned out that the function `splotg5()` in v37 was missing. After I copied it from version v36 the error message disappeared.
+
+The many functions not only cluttered up the global environment (workspace) but needed too much of working memory too.  Memory problems of this huge file (> 2 MB) practically prevents working with it. So I have loaded the file in the setup chunk in a local environment named `allfun` to prevent clogging the workspace (the Global Environment). Calling one of these special function provided by Wilcox I have to embed the R code into `with(allfun, {x})`, where `x` stands for the embedded R code.
+
 
 ### GitHub Version
 
@@ -181,50 +139,29 @@ You can download the `WRS Package` from https://github.com/nicebread/WRS from Gi
 The Github version is not always up-to-date, but at the time of this writing (2019-08-03), it has already installed Version v0.36. On Github, you will also find instructions on the installation of the C++ version. The C++ functions in the package `WRScpp` may considerably shorten the executions times of some functions. But currently I have problems to install them. (See my [error report](https://github.com/mrxiaohe/WRScpp/issues/5).)
 
 
-```{theorem, label="title-install-package",  name="Install book packages with dependencies"}
-```
+<!-- ```{theorem, label="title-install-package",  name="Install book packages with dependencies"} -->
+<!-- ``` -->
 
-```{r install-packages, warning=F, message=F, cache=T}
+```{r install-packages, warning=F, message=F, cache=F, echo=F}
 
 list.of.packages <- c("MASS", "akima", "robustbase", "devtools", "remote",
                   "cobs", "robust", "mgcv", "scatterplot3d", "quantreg", 
                   "rrcov", "lars", "pwr", "trimcluster", "mc2d",
                   "psych", "Rfit", "DepthProc", "class", "fda",
-                  "RcppArmadillo")
+                  "RcppArmadillo", # above functions required by Wilcox' file
+                  "WRS2", # Wilcox package on CRAN, necessary for its data files
+                  "xfun", "knitr", "tidyverse", "kableExtra") # functions for my work on this book
 packages.to.install <-
   list.of.packages[!(list.of.packages %in% installed.packages()[, "Package"])]
+if (length(packages.to.install) > 0) install.packages(packages.to.install)
 packages.to.update <-
-  list.of.packages[(list.of.packages %in% installed.packages()[, "Package"])]
-if (length(packages.to.update))
-  update.packages(packages.to.update)
-if (length(packages.to.install))
-  install.packages(packages.to.install)
+  list.of.packages[(list.of.packages %in% old.packages()[, "Package"])]
+if (length(packages.to.update) > 0) update.packages(oldPkgs = packages.to.update)
 
-
-# 
-# if (!require("MASS"))
-#         {install.packages("MASS", repos = 'http://cran.wu.ac.at/')
-#         library(MASS)}
-# 
-# # first: install dependent packages
-# # I am going to use for easier installation the package `xfun`
-# xfun::pkg_attach2("MASS", "akima", "robustbase", "devtools")
-# 
-# # second: install suggested packages
-# xfun::pkg_attach2("cobs", "robust", "mgcv", "scatterplot3d", 
-#                   "quantreg", "rrcov", "lars", "pwr", "trimcluster", "mc2d",
-#                   "psych", "Rfit", "DepthProc", "class", "fda")
-# 
-# # third: install an additional package which provides some C functions
-# xfun::pkg_attach2("RcppArmadillo")
-# 
-# # next line gets an error message: see https://github.com/mrxiaohe/WRScpp/issues/5
-# # remotes::install_github("mrxiaohe/WRScpp", 
-# #                         build_manual = TRUE, build_vignettes = TRUE)
-# 
-
-
-# # fourth: install WRS
+# install the WRS package from GitHub
+# it contains some of the Wilcox functions `allfun` with help files
+# loaded after WRS2 (from CRAN) because it is more up to date
+# so that many duplicate functions from WRS2 will be masked
 if (!requireNamespace("WRS"))
   remotes::install_github(
     "nicebread/WRS",
@@ -232,6 +169,9 @@ if (!requireNamespace("WRS"))
     build_manual = TRUE,
     build_vignettes = TRUE
   )
+
+# load all packages above
+xfun::pkg_attach2(list.of.packages, "WRS")
 
 ```
 
@@ -241,14 +181,6 @@ if (!requireNamespace("WRS"))
 
 The appeal of this limited edition of 37 functions are the included help files. There is an long article^[Mair, P., & Wilcox, R. (2019). Robust statistical methods in R using the WRS2 package. Behavior Research Methods. https://doi.org/10.3758/s13428-019-01246-w ] with a description of the functions currently available. (Here is the link for [direct access to the PDF](https://dornsife.usc.edu/assets/sites/239/docs/WRS2.pdf).)
 
-
-```{lemma, label="title-install-cran",  name="Install CRAN version"}
-```
-
-```{r install-cran}
-xfun::loadable("WRS2")
-xfun::pkg_attach2("WRS2")
-```
 
 I have installed the R package from CRAN and will compare it with the full version. Whenever the need arises e.g., whenever I need functions not available in the CRAN version, I will copy & paste the source code of the appropriate functions into the R code chunk and load them.
 
