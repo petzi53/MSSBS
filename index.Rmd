@@ -71,11 +71,6 @@ with(allfun, {source(file = "_mssbs-software/Rallfun.R", local = TRUE)})
 
 
 #######################################################################
-# Store all variables up to this line
-# Later generated variables will be deleted after end of each chapter
-freeze <- ls()
-
-#######################################################################
 ## Miscellanous other general settings
 
 # disabling scientific notation in calculation
@@ -129,7 +124,7 @@ also installing the dependencies ‘TTR’, ‘ICS’, ‘stabs’, ‘nnls’, 
 
 To source the huge file will take some time and generates an error: `Error in eval(ei, envir) : object 'splotg5' not found`. Version v36 has still worked. It turned out that the function `splotg5()` in v37 was missing. After I copied it from version v36 the error message disappeared.
 
-The many functions not only cluttered up the global environment (workspace) but needed too much of working memory too.  Memory problems of this huge file (> 2 MB) practically prevents working with it. So I have loaded the file in the setup chunk in a local environment named `allfun` to prevent clogging the workspace (the Global Environment). Calling one of these special function provided by Wilcox I have to embed the R code into `with(allfun, {x})`, where `x` stands for the embedded R code.
+The many functions not only cluttered up the global environment (workspace) but needed too much of the working memory too.  Memory problems of this huge file (> 2 MB) practically prevents working with it. So I have loaded the file in the setup chunk in a local environment named `allfun` to prevent clogging the workspace (the Global Environment). Calling one of these special function provided by Wilcox I have to embed the R code into `with(allfun, {x})`, where `x` stands for the embedded R code.
 
 
 ### GitHub Version
@@ -138,9 +133,6 @@ You can download the `WRS Package` from https://github.com/nicebread/WRS from Gi
 
 The Github version is not always up-to-date, but at the time of this writing (2019-08-03), it has already installed Version v0.36. On Github, you will also find instructions on the installation of the C++ version. The C++ functions in the package `WRScpp` may considerably shorten the executions times of some functions. But currently I have problems to install them. (See my [error report](https://github.com/mrxiaohe/WRScpp/issues/5).)
 
-
-<!-- ```{theorem, label="title-install-package",  name="Install book packages with dependencies"} -->
-<!-- ``` -->
 
 ```{r install-packages, warning=F, message=F, cache=F, echo=F}
 
@@ -173,6 +165,12 @@ if (!requireNamespace("WRS"))
 # load all packages above
 xfun::pkg_attach2(list.of.packages, "WRS")
 
+#######################################################################
+# Store all variables up to this line
+# Later generated variables will be deleted after end of each chapter
+freeze <- ls()
+
+
 ```
 
 
@@ -181,8 +179,7 @@ xfun::pkg_attach2(list.of.packages, "WRS")
 
 The appeal of this limited edition of 37 functions are the included help files. There is an long article^[Mair, P., & Wilcox, R. (2019). Robust statistical methods in R using the WRS2 package. Behavior Research Methods. https://doi.org/10.3758/s13428-019-01246-w ] with a description of the functions currently available. (Here is the link for [direct access to the PDF](https://dornsife.usc.edu/assets/sites/239/docs/WRS2.pdf).)
 
-
-I have installed the R package from CRAN and will compare it with the full version. Whenever the need arises e.g., whenever I need functions not available in the CRAN version, I will copy & paste the source code of the appropriate functions into the R code chunk and load them.
+Whenever a function of the CRAN version is used you can conveniently use the RStudio help utility to look into the details of this function.
 
 ## Summary
 
@@ -190,41 +187,29 @@ There are several options to load the required packages. Each has some advantage
 
 | Option | Advantage | Disadvantage |
 |--------|-----------|--------------|
-| `Rallfun-v??.txt` | All functions <br />Up to date, latest version <br/>Help infos available | Memory problem <br>Not included as R packages <br/>Obstructs workspace <br />Help infos as comments baked into function |
+| `Rallfun-v??.txt` | All functions <br />Up to date, latest version <br/>Help infos available | Memory problem <br>Not included as R packages <br/>Own environment to prevent obstracting workspace <br />Help infos as comments baked into function |
 | `WRS` (Github) | Many functions <br />R package | Not all functions<br/>Not obvious which are missing<br />No help pages |
 | `WRS2` (CRAN) | R package<br />Help files | Only a small subset of functions |
 
 To get a better overview which functions are used and to have full control of using it I will use a double strategy to implement these functions of the Wilcox book: 
 
-1) I will use the CRAN package `WRS2`. It is convenient to work with an R packages with help files and a detailed vignette as PDF file.
+1) I will use the file `Rallfun-v??.txt` to get all functions into the R memeory. But I will create a separate environment `allfun` to prevent memory problems and the clogging of the workspace. For using these special functions provided by the book, I will have to address this special environment by the `with` command.
 
-2) To supplement those functions which are missing in `WRS2` I will provide R scripts per chapter with all functions needed for the relevant chapter. These functions are sourced into a special `wilcox` environment to prevent clogging of the workspace.
-
-3) I will store the full list of loaded packages (N = `r length(.packages())`) into a new generated `_mssbs-data` directory for future reference.
-
-```{theorem, label="title-save-pkg-list",  name="Save a list of all loaded packages of this chapter"}
-```
-```{r save-pkgs-list}
-if (!dir.exists("_data")) dir.create("_mssbs-data")
-saveRDS(data.frame(.packages()), file.path("_mssbs-data/pkglist.rds"))
-```
+2) I will note missing functions from `Rallfun-v??.txt` and looking for them in the other files and/or in the older version of the `Rallfun-v??.txt`-file. I will add these functions to the `allfun` environment.^[In a previous draft version of the first chapters I had displayed the source code of all functions and also my program code for administrative issues, e.g., the code how an external graphic is centered deisplayed. In this new version I have abstained from the additional complexity how to use the `bookdown` package and have concentrated on statistical issues.]
 
 
-4) Finally at the end of each chapter I will remove all non-base packages and clean up the working space so that I can start each chapter from scratch without side effects.
+3) Finally at the end of each chapter I will remove all non-base packages and clean up the working space so that I can start each chapter from scratch without side effects.
 
-```{theorem, label="title-cleanup",  name="Detach all non-base packages and clean workspace"}
-```
-
-```{r cleanup, warning=FALSE, results='hide'}
-suppressWarnings(lapply(names(sessionInfo()$otherPkgs),
-                        function(pkgs)
-                          detach(
-                            paste0('package:', pkgs),
-                            character.only = T,
-                            unload = T,
-                            force = T
-                          )))
-
+```{r cleanup, results='hide', include=FALSE}
+# xxx <- suppressWarnings(lapply(names(sessionInfo()$otherPkgs),
+#                         function(pkgs)
+#                           detach(
+#                             paste0('package:', pkgs),
+#                             character.only = T,
+#                             unload = T,
+#                             force = T
+#                           )))
+# 
 
 rm(list = setdiff(ls(), freeze))
 ```

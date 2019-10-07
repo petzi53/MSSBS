@@ -1,6 +1,10 @@
 # Summaries of Data
 
-
+```{r generate-freeze-02}
+# Store all variables up to this line
+# Later generated variables will be deleted after end of each chapter
+freeze <- ls()
+```
 
 The following text is not a complete excerpt or summary of chapter 2. On the one hand I will only write down those things that are new for me and were not coverend in other introductory statistics text books. On the other side I am exploring the presented concepts and at this occasion I will using and practicing R.
 
@@ -58,91 +62,83 @@ For the R standard function `mean()` the default trim parameter is set to 0, whi
 
 Wilcox provides `tmean()` especially written for the book, which has as it default trim parameter value 0.2. (`tmean(x, tr=.2)`)
 
-```{theorem, label="title-tmean-function", name="Trimmed mean"}
-```
+<!-- ```{theorem, label="title-tmean-function", name="Trimmed mean"} -->
+<!-- ``` -->
 
-```{r tmean-function}
-with(allfun, {
-  tmean <- function(x,
-                    tr = .2,
-                    na.rm = FALSE,
-                    STAND = NULL) {
-    if (na.rm)
-      x <- x[!is.na(x)]
-    val <- mean(x, tr)
-    val
-  }
-})
-```
+<!-- ```{r tmean-function} -->
+<!-- with(allfun, { -->
+<!--   tmean <- function(x, -->
+<!--                     tr = .2, -->
+<!--                     na.rm = FALSE, -->
+<!--                     STAND = NULL) { -->
+<!--     if (na.rm) -->
+<!--       x <- x[!is.na(x)] -->
+<!--     val <- mean(x, tr) -->
+<!--     val -->
+<!--   } -->
+<!-- }) -->
+<!-- ``` -->
 
 
 ### Winsorized mean {#winsorized-mean}
 
 Later in chapter 4 the so-called winsorized mean^[See the German explication for "winsorisieren": https://m.portal.hogrefe.com/dorsch/winsorisieren/] is needed. Instead of trimming a certain percentage of the lowest and highest data the winsorized mean set this percentage of data equal to the lowest respectively to the highest value which would have not be trimmed by the trim function. Again the finite sample breakdown point equals approximately the proportion of points winsorized.
 
-```{theorem, label="title-winsorized-mean", name="Winsorized mean with supporting functions"}
-```
 
-```{r winsorized-mean}
+<!-- ```{theorem, label="title-winsorized-mean", name="Winsorized mean with supporting functions"} -->
+<!-- ``` -->
 
-with(allfun, {
-  winmean <- function(x, tr = .2, na.rm = TRUE) {
-    if (na.rm)
-      x = elimna(x)
-    winmean <- mean(winval(x, tr))
-    winmean
-  }
-  
-  elimna <- function(m) {
-    #
-    # remove any rows of data having missing values
-    #
-    if (is.null(dim(m)))
-      m <- as.matrix(m)
-    ikeep <- c(1:nrow(m))
-    for (i in 1:nrow(m))
-      if (sum(is.na(m[i,]) >= 1))
-        ikeep[i] <- 0
-    elimna <- m[ikeep[ikeep >= 1], ]
-    elimna
-  }
-  
-  winval <- function(x, tr = .2) {
-    #
-    #  Winsorize the data in the vector x.
-    #  tr is the amount of Winsorization which defaults to .2.
-    #
-    #  This function is used by several other functions that come with this book.
-    #
-    y <- sort(x)
-    n <- length(x)
-    ibot <- floor(tr * n) + 1
-    itop <- length(x) - ibot + 1
-    xbot <- y[ibot]
-    xtop <- y[itop]
-    winval <- ifelse(x <= xbot, xbot, x)
-    winval <- ifelse(winval >= xtop, xtop, winval)
-    winval
-  }
-  
-})
-```
+<!-- ```{r winsorized-mean} -->
 
-```{example,  name="Compare mean, median, trimmed and winsorized mean"}
+<!-- with(allfun, { -->
+<!--   winmean <- function(x, tr = .2, na.rm = TRUE) { -->
+<!--     if (na.rm) -->
+<!--       x = elimna(x) -->
+<!--     winmean <- mean(winval(x, tr)) -->
+<!--     winmean -->
+<!--   } -->
 
+<!--   elimna <- function(m) { -->
+<!--     # -->
+<!--     # remove any rows of data having missing values -->
+<!--     # -->
+<!--     if (is.null(dim(m))) -->
+<!--       m <- as.matrix(m) -->
+<!--     ikeep <- c(1:nrow(m)) -->
+<!--     for (i in 1:nrow(m)) -->
+<!--       if (sum(is.na(m[i,]) >= 1)) -->
+<!--         ikeep[i] <- 0 -->
+<!--     elimna <- m[ikeep[ikeep >= 1], ] -->
+<!--     elimna -->
+<!--   } -->
 
-Values unsorted: $12, 45, 23, 79, 19, 92, 30, 58, 132, 1000$, 
+<!--   winval <- function(x, tr = .2) { -->
+<!--     # -->
+<!--     #  Winsorize the data in the vector x. -->
+<!--     #  tr is the amount of Winsorization which defaults to .2. -->
+<!--     # -->
+<!--     #  This function is used by several other functions that come with this book. -->
+<!--     # -->
+<!--     y <- sort(x) -->
+<!--     n <- length(x) -->
+<!--     ibot <- floor(tr * n) + 1 -->
+<!--     itop <- length(x) - ibot + 1 -->
+<!--     xbot <- y[ibot] -->
+<!--     xtop <- y[itop] -->
+<!--     winval <- ifelse(x <= xbot, xbot, x) -->
+<!--     winval <- ifelse(winval >= xtop, xtop, winval) -->
+<!--     winval -->
+<!--   } -->
 
-Values sorted:   $12, 19, 23, 30, 45, 58, 79, 92, 132, 1000$.
+<!-- }) -->
+<!-- ``` -->
 
 The following demonstrations shows that the non-adapted mean is quite different from the median. It is almost three times bigger! You will get considerably better results with the trimmed mean and the winsorized mean.
 
 But keep in mind that there are situation where the mean is still a very relevant measure (see Example \@ref(exm:rel-mean)).
-```
 
 
-
-```{lemma,  name="Comparison of mean, median, trimmed and winsorized mean"}
+```{theorem,  name="Comparison of mean, median, trimmed and winsorized mean"}
 ```
 
 ```{r compare-trim-winsorized-mean}
@@ -214,7 +210,7 @@ $$IQR = q_{2} - q_{1}$$
 
 
 
-```{example,  name="Calculation of the ideal fourth"}
+```{theorem,  name="Calculation of the ideal fourth"}
 
 
 Wilcox shows the process of the computation with the following 12 values: $-29.6, -20.9, -19.7, -15.4, -8.0, -4.3, 0.8, 2.0, 6.2, 11.2, 25.0$
@@ -238,42 +234,42 @@ $$IQR = 4.45 - (-17.9) = 22.35$$
 
 #### Comparison of different IQR computations
 
-With `idealf(x)` respectively `idealfIQR` using the ideal fourths a tenth function was especially written for the Wilcox book. To use this Wilcox measure I had to copy and load the corresponding functions `idealf`, `idealfIQR` from the `Software/Rallfun-v36.txt` and additionally `elimna` (called by `idealfIQR`), which is only located on the github version of [WRS2](https://github.com/cran/WRS2/blob/master/R/elimna.R).
+With `idealf(x)` respectively `idealfIQR` using the ideal fourths a tenth function for the IQR computation was especially written for the Wilcox book.
 
 
-```{lemma,  name="Function to calculate the ideal fourth"}
-```
+<!-- ```{lemma,  name="Function to calculate the ideal fourth"} -->
+<!-- ``` -->
 
 
-```{r load-idealf}
+<!-- ```{r load-idealf} -->
 
-with(allfun, {
-  idealf <- function(x, na.rm = FALSE) {
-    #
-    # Compute the ideal fourths for data in x
-    #
-    if (na.rm)
-      x <- x[!is.na(x)]
-    j <- floor(length(x) / 4 + 5 / 12)
-    y <- sort(x)
-    g <- (length(x) / 4) - j + (5 / 12)
-    ql <- (1 - g) * y[j] + g * y[j + 1]
-    k <- length(x) - j + 1
-    qu <- (1 - g) * y[k] + g * y[k - 1]
-    list(ql = ql, qu = qu)
-  }
-  
-  idealfIQR <- function(x) {
-    #
-    #  Compute the interquartile range using the ideal fourths.
-    x = elimna(x)
-    res = idealf(x)$qu - idealf(x)$ql
-    res
-  }
-  
-})
+<!-- with(allfun, { -->
+<!--   idealf <- function(x, na.rm = FALSE) { -->
+<!--     # -->
+<!--     # Compute the ideal fourths for data in x -->
+<!--     # -->
+<!--     if (na.rm) -->
+<!--       x <- x[!is.na(x)] -->
+<!--     j <- floor(length(x) / 4 + 5 / 12) -->
+<!--     y <- sort(x) -->
+<!--     g <- (length(x) / 4) - j + (5 / 12) -->
+<!--     ql <- (1 - g) * y[j] + g * y[j + 1] -->
+<!--     k <- length(x) - j + 1 -->
+<!--     qu <- (1 - g) * y[k] + g * y[k - 1] -->
+<!--     list(ql = ql, qu = qu) -->
+<!--   } -->
 
-```
+<!--   idealfIQR <- function(x) { -->
+<!--     # -->
+<!--     #  Compute the interquartile range using the ideal fourths. -->
+<!--     x = elimna(x) -->
+<!--     res = idealf(x)$qu - idealf(x)$ql -->
+<!--     res -->
+<!--   } -->
+
+<!-- }) -->
+
+<!-- ``` -->
 
 
 
@@ -308,40 +304,41 @@ The table compares the different computation for the IQR. R uses as standard `ty
 
 ### Winsorized Variance
 
-When working with the trimmed mean, than the winsorized variance plays an important role. The winsorized variance is just the sample variance of the winsorized values. Its finite sample breakdown point is equal to the amount winsorized.
+When working with the trimmed mean the winsorized variance plays an important role. The winsorized variance is just the sample variance of the winsorized values. Its finite sample breakdown point is equal to the amount winsorized.
 
 The R function `winvar` is especially written for the book and takes of its default 0.2. `winvar(x, tr = 0.2, na.rm = FALSE, STAND = NULL)`^[The parameter `STAND` has no functionality, it is only kept for WRS compatibility purposes.]
 
-```{theorem, label="title-winsorized-variance", name="Winsorized Variance"}
-```
-```{r winsorized-variance}
-with(allfun, {
-  winvar <- function(x,
-                     tr = .2,
-                     na.rm = FALSE,
-                     STAND = NULL) {
-    #
-    #  Compute the gamma Winsorized variance for the data in the vector x.
-    #  tr is the amount of Winsorization which defaults to .2.
-    #
-    remx = x
-    x <- x[!is.na(x)]
-    y <- sort(x)
-    n <- length(x)
-    ibot <- floor(tr * n) + 1
-    itop <- length(x) - ibot + 1
-    xbot <- y[ibot]
-    xtop <- y[itop]
-    y <- ifelse(y <= xbot, xbot, y)
-    y <- ifelse(y >= xtop, xtop, y)
-    wv <- var(y)
-    if (!na.rm)
-      if (sum(is.na(remx) > 0))
-        wv = NA
-    wv
-  }
-})
-```
+
+<!-- ```{theorem, label="title-winsorized-variance", name="Winsorized Variance"} -->
+<!-- ``` -->
+<!-- ```{r winsorized-variance} -->
+<!-- with(allfun, { -->
+<!--   winvar <- function(x, -->
+<!--                      tr = .2, -->
+<!--                      na.rm = FALSE, -->
+<!--                      STAND = NULL) { -->
+<!--     # -->
+<!--     #  Compute the gamma Winsorized variance for the data in the vector x. -->
+<!--     #  tr is the amount of Winsorization which defaults to .2. -->
+<!--     # -->
+<!--     remx = x -->
+<!--     x <- x[!is.na(x)] -->
+<!--     y <- sort(x) -->
+<!--     n <- length(x) -->
+<!--     ibot <- floor(tr * n) + 1 -->
+<!--     itop <- length(x) - ibot + 1 -->
+<!--     xbot <- y[ibot] -->
+<!--     xtop <- y[itop] -->
+<!--     y <- ifelse(y <= xbot, xbot, y) -->
+<!--     y <- ifelse(y >= xtop, xtop, y) -->
+<!--     wv <- var(y) -->
+<!--     if (!na.rm) -->
+<!--       if (sum(is.na(remx) > 0)) -->
+<!--         wv = NA -->
+<!--     wv -->
+<!--   } -->
+<!-- }) -->
+<!-- ``` -->
 
 
 ```{example  name="Calcuation of the Winsorized Variance"}
@@ -407,12 +404,15 @@ The R-functions for these measures are:
 * Tau measure of scale: `tauvar()`
 * Translated Biweight S: `(tbs())$var`
 
+
 ```{lemma, label="other-disp-measures",  name="Other dispersion measures"}
 ```
 
-```{r other_dispersions-measures}
+```{r other_dispersions-measures, echo=FALSE}
 
-
+# Because of the special code format in the following example (see: next chunk)
+# I have here to include the complete code of the funtions
+# Otherwise my loop in the example chunk would not work
 
 pbvar <- function(x, beta = .2) {
   #   Compute the percentage bend midvariance
@@ -807,7 +807,7 @@ elimna <- function(m) {
 
 
 ```{r comp-dispersion-measures}
-
+library(magrittr)
 
 vecs <- list(c("Vector W", "Vector X", "Vector Y", "Vector Z"))
 measures <- list(c("pbvar", "bivar", "tauvar", "tbs"))
@@ -832,6 +832,8 @@ for (i in c("pbvar", "bivar", "tauvar")) {
 # special treatment of tbs as it does not return a single value but a list
 # the same program lines gives different results! Why?
 
+# browser()
+# 
 for (j in 1:4) {
   m2[j, 4] <- tbs(m1[j, ])$var
 }
@@ -848,7 +850,7 @@ m %>%
 
 For the following interpretation we are not interested in the magnitude of these dispersion measures, because we only want to compare their pperformance them with the different size and number of outliers in the four vectors W, X, Y, Z.
 
-This table demonstrates: 
+The table demonstrates: 
 
 1. The `pbvar()` ignores with the default parameter of the bending constand of 0.2 the two largest and smallest values. Therefore it is completely robust with two outliers and does not change its value. But with more than two outliers on one side (small or large) its performance cause havoc: The value of pbvar in the `Vector Z`-colummn is strikingly different from the other values. In that case the bending constant has to be enlarged. For instance: Changing the constant from .2 to .3 results in `pbvar()` values of 2128 for all four vectors.
 2. The `bivar()` value is for the `Vector W` similar to the percentage bend midvariance `pbvar()`. But increasing the largest value 132 and adding more outliers it decreases! The reason is that `bivar()` has 132 not detected as an outlier in contrast to 1000 which values are subsequently ignored.
@@ -878,7 +880,7 @@ $$\frac{|X - \bar{X}|}{s} > 2.$$
 
 This formula works fine in some cases notably if there are not many outliers inflating the sample mean and especially the sample standard deviation. The following three examples will demonstrate one problem of outlier detection, called _masking_.
 
-```{lemma,  name="Demonstration data for masking of outliers"}
+```{example,  name="Demonstration data for masking of outliers"}
 ```
 
 ```{r outlier-detection-mean-variance}
@@ -924,117 +926,120 @@ If we now substitute the formula above with the values of line 4, we get `r (100
 
 Wilcox suggests in his book the new programmed function `out(x)` for detecting outliers without the masking problem. 
 
-```{lemma,  name="outlier function `out(x)`"}
+
+
+<!-- ```{lemma,  name="outlier function `out(x)`"} -->
+<!-- ``` -->
+
+<!-- ```{r out-function-detecting-outliers} -->
+
+<!-- with(allfun, { -->
+<!--   out <- function(x, -->
+<!--                   cov.fun = cov.mve, -->
+<!--                   xlab = "X", -->
+<!--                   ylab = "Y", -->
+<!--                   qval = .975, -->
+<!--                   crit = NULL, -->
+<!--                   plotit = FALSE, -->
+<!--                   ...) { -->
+<!--     # -->
+<!--     #  Search for outliers using robust measures of location and scatter, -->
+<!--     #  which are used to compute robust analogs of Mahalanobis distance. -->
+<!--     # -->
+<!--     #  x is an n by p matrix or a vector of data. -->
+<!--     # -->
+<!--     #  The function returns the values flagged as an outlier plus -->
+<!--     #  the (row) number where the data point is stored. -->
+<!--     #  If x is a vector, out.id=4 indicates that the fourth observation -->
+<!--     #  is an outlier and outval=123 indicates that 123 is the value. -->
+<!--     #  If x is a matrix, out.id=4 indicates that the fourth row of -->
+<!--     #  the matrix is an outlier and outval reports the corresponding -->
+<!--     #  values. -->
+<!--     # -->
+<!--     #  The function also returns the distance of the -->
+<!--     #  points identified as outliers -->
+<!--     #  in the variable dis. -->
+<!--     # -->
+<!--     #  For bivariate data, if plotit=TRUE, plot points and circle outliers. -->
+<!--     # -->
+<!--     #  cov.fun determines how the measure of scatter is estimated. -->
+<!--     #  Possible choices are -->
+<!--     #  cov.mve (the MVE estimate) -->
+<!--     #  cov.mcd (the MCD estimate) -->
+<!--     #  covmba2 (the MBA or median ball algorithm) -->
+<!--     #  rmba  (an adjustment of MBA suggested by D. Olive) -->
+<!--     #  cov.roc (Rocke's TBS estimator) -->
+<!--     # -->
+<!--     #  plotit=FALSE used to avoid problems when other functions in WRS call -->
+<!--     #  this function -->
+<!--     # -->
+<!--     library(MASS) -->
+<!--     oldSeed <- .Random.seed -->
+<!--     set.seed(12) -->
+<!--     if (is.data.frame(x)) -->
+<!--       x = as.matrix(x) -->
+<!--     if (is.list(x)) -->
+<!--       stop("Data cannot be stored in list mode") -->
+<!--     nrem = nrow(as.matrix(x)) -->
+<!--     if (!is.matrix(x)) { -->
+<!--       dis <- (x - median(x, na.rm = TRUE)) ^ 2 / mad(x, na.rm = TRUE) ^ 2 -->
+<!--       if (is.null(crit)) -->
+<!--         crit <- sqrt(qchisq(.975, 1)) -->
+<!--       vec <- c(1:length(x)) -->
+<!--     } -->
+<!--     if (is.matrix(x)) { -->
+<!--       mve <- cov.fun(elimna(x)) -->
+<!--       dis <- mahalanobis(x, mve$center, mve$cov) -->
+<!--       if (is.null(crit)) -->
+<!--         crit <- sqrt(qchisq(.975, ncol(x))) -->
+<!--       vec <- c(1:nrow(x)) -->
+<!--     } -->
+<!--     dis[is.na(dis)] = 0 -->
+<!--     dis <- sqrt(dis) -->
+<!--     chk <- ifelse(dis > crit, 1, 0) -->
+<!--     id <- vec[chk == 1] -->
+<!--     keep <- vec[chk == 0] -->
+<!--     if (is.matrix(x)) { -->
+<!--       if (ncol(x) == 2 && plotit) { -->
+<!--         plot(x[, 1], -->
+<!--              x[, 2], -->
+<!--              xlab = xlab, -->
+<!--              ylab = ylab, -->
+<!--              type = "n") -->
+<!--         flag <- rep(TRUE, nrow(x)) -->
+<!--         flag[id] <- FALSE -->
+<!--         points(x[flag, 1], x[flag, 2]) -->
+<!--         if (sum(!flag) > 0) -->
+<!--           points(x[!flag, 1], x[!flag, 2], pch = "*") -->
+<!--       } -->
+<!--     } -->
+<!--     if (!is.matrix(x)) -->
+<!--       outval <- x[id] -->
+<!--     if (is.matrix(x)) -->
+<!--       outval <- x[id,] -->
+<!--     n = nrow(as.matrix(x)) -->
+<!--     n.out = length(id) -->
+<!--     assign(x = '.Random.seed', -->
+<!--            value = oldSeed, -->
+<!--            envir = .GlobalEnv) -->
+<!--     list( -->
+<!--       n = n, -->
+<!--       n.out = n.out, -->
+<!--       out.val = outval, -->
+<!--       out.id = id, -->
+<!--       keep = keep, -->
+<!--       dis = dis, -->
+<!--       crit = crit -->
+<!--     ) -->
+<!--   } -->
+<!-- }) -->
+<!-- ``` -->
+
+
+```{example,  name="Demonstrate results of function `out(x)`"}
 ```
 
-```{r out-function-detecting-outliers}
-
-with(allfun, {
-  out <- function(x,
-                  cov.fun = cov.mve,
-                  xlab = "X",
-                  ylab = "Y",
-                  qval = .975,
-                  crit = NULL,
-                  plotit = FALSE,
-                  ...) {
-    #
-    #  Search for outliers using robust measures of location and scatter,
-    #  which are used to compute robust analogs of Mahalanobis distance.
-    #
-    #  x is an n by p matrix or a vector of data.
-    #
-    #  The function returns the values flagged as an outlier plus
-    #  the (row) number where the data point is stored.
-    #  If x is a vector, out.id=4 indicates that the fourth observation
-    #  is an outlier and outval=123 indicates that 123 is the value.
-    #  If x is a matrix, out.id=4 indicates that the fourth row of
-    #  the matrix is an outlier and outval reports the corresponding
-    #  values.
-    #
-    #  The function also returns the distance of the
-    #  points identified as outliers
-    #  in the variable dis.
-    #
-    #  For bivariate data, if plotit=TRUE, plot points and circle outliers.
-    #
-    #  cov.fun determines how the measure of scatter is estimated.
-    #  Possible choices are
-    #  cov.mve (the MVE estimate)
-    #  cov.mcd (the MCD estimate)
-    #  covmba2 (the MBA or median ball algorithm)
-    #  rmba  (an adjustment of MBA suggested by D. Olive)
-    #  cov.roc (Rocke's TBS estimator)
-    #
-    #  plotit=FALSE used to avoid problems when other functions in WRS call
-    #  this function
-    #
-    library(MASS)
-    oldSeed <- .Random.seed
-    set.seed(12)
-    if (is.data.frame(x))
-      x = as.matrix(x)
-    if (is.list(x))
-      stop("Data cannot be stored in list mode")
-    nrem = nrow(as.matrix(x))
-    if (!is.matrix(x)) {
-      dis <- (x - median(x, na.rm = TRUE)) ^ 2 / mad(x, na.rm = TRUE) ^ 2
-      if (is.null(crit))
-        crit <- sqrt(qchisq(.975, 1))
-      vec <- c(1:length(x))
-    }
-    if (is.matrix(x)) {
-      mve <- cov.fun(elimna(x))
-      dis <- mahalanobis(x, mve$center, mve$cov)
-      if (is.null(crit))
-        crit <- sqrt(qchisq(.975, ncol(x)))
-      vec <- c(1:nrow(x))
-    }
-    dis[is.na(dis)] = 0
-    dis <- sqrt(dis)
-    chk <- ifelse(dis > crit, 1, 0)
-    id <- vec[chk == 1]
-    keep <- vec[chk == 0]
-    if (is.matrix(x)) {
-      if (ncol(x) == 2 && plotit) {
-        plot(x[, 1],
-             x[, 2],
-             xlab = xlab,
-             ylab = ylab,
-             type = "n")
-        flag <- rep(TRUE, nrow(x))
-        flag[id] <- FALSE
-        points(x[flag, 1], x[flag, 2])
-        if (sum(!flag) > 0)
-          points(x[!flag, 1], x[!flag, 2], pch = "*")
-      }
-    }
-    if (!is.matrix(x))
-      outval <- x[id]
-    if (is.matrix(x))
-      outval <- x[id,]
-    n = nrow(as.matrix(x))
-    n.out = length(id)
-    assign(x = '.Random.seed',
-           value = oldSeed,
-           envir = .GlobalEnv)
-    list(
-      n = n,
-      n.out = n.out,
-      out.val = outval,
-      out.id = id,
-      keep = keep,
-      dis = dis,
-      crit = crit
-    )
-  }
-})
-```
-
-```{lemma,  name="Demonstrate results of function `out(x)`"}
-```
-
-```{r}
+```{r, demonstrate-out-function}
 # options(tinytex.verbose = TRUE)
 with(allfun, {
   out(z.out)
@@ -1054,27 +1059,11 @@ The function `out(x)` detects both outliers and avoids _masking_.
 ### Boxplot rule
 
 Another method to detect outlier is a graphical summary provided by a boxplot.
-To get the graphic with `bookdown` displayed I use the folloring code snippet:
-
-```{lemma,  name="How to display the following external image file?"}
-```
-
-
-````markdown
-`r ''````{r label="boxplot", out.width="100%",
-          echo=FALSE, fig.align="center",
-          fig.cap="Detecting outliers with boxplot graphics
-          (Ruediger85/CC-BY-SA-3.0/Wikimedia Commons)"}
-knitr::include_graphics("images/boxplot-min.png")
-```
-````
 
 
 ```{r label="boxplot", out.width="100%", echo=FALSE, fig.align="center", fig.cap="Detecting outliers with boxplot graphics (Ruediger85/CC-BY-SA-3.0/Wikimedia Commons)"}
 knitr::include_graphics("images/boxplot-min.png")
 ```
-
-
 
 The end of the whiskers are the smallest and largest values not declared outliers and are called _adjacent values_. Because the IQR has finite sample breakdown point of 0.25. more than 25% of the data must be outliers before the problem of masking occurs.
 
@@ -1102,7 +1091,7 @@ knitr::include_graphics("images/500px-Boxplot_vs_PDF.svg.png")
 There is a built-in R function `boxplot(x)`. For a demonstration I will use the `rivers` data again. 
 
 
-```{lemma,  name="Demonstration of the built-in R function `boxplot(x)`"}
+```{example,  name="Demonstration of the built-in R function `boxplot(x)`"}
 ```
 
 
@@ -1114,7 +1103,7 @@ boxplot(rivers, notch = TRUE, ylab = "Length in km", xlab = "Rivers")
 
 You see several point outside the upper whisker (outside 1.5 IQR). These are the detected outliers. To get the numerical values of the boxplot Wilcox mentions `boxplot(x, plot = FALSE)` but I would recommend to use `boxplot.stats(x)`.
 
-```{lemma,  name="Outliers values with the boxplot rule using `boxplot` and `boxplot.stats`"}
+```{example,  name="Outliers values with the boxplot rule using `boxplot` and `boxplot.stats`"}
 ```
 
 ```{r boxplot-data}
@@ -1156,67 +1145,67 @@ $$k = \frac{17.63n - 23.64}{7.74n - 3.71}$$
 Wilcos has developed a function `outbox(x)` using the two different methods for detecting outliers with the boxplot method (standard and modified version).
 
 
-```{lemma,  name="Detecting outliers with special funtion `outbox(x)`"}
-```
+<!-- ```{lemma,  name="Detecting outliers with special funtion `outbox(x)`"} -->
+<!-- ``` -->
 
-```{r outbox-function}
+<!-- ```{r outbox-function} -->
 
-with(allfun, {
-  outbox <- function(x,
-                     mbox = FALSE,
-                     gval = NA,
-                     plotit = FALSE,
-                     STAND = FALSE) {
-    #
-    # This function detects outliers using the
-    # boxplot rule, but unlike the R function boxplot,
-    # the ideal fourths are used to estimate the quartiles.
-    #
-    # Setting mbox=TRUE results in using the modification
-    # of the boxplot rule suggested by Carling (2000).
-    #
-    x <- x[!is.na(x)] # Remove missing values
-    if (plotit)
-      boxplot(x)
-    n <- length(x)
-    temp <- idealf(x)
-    if (mbox) {
-      if (is.na(gval))
-        gval <- (17.63 * n - 23.64) / (7.74 * n - 3.71)
-      cl <- median(x) - gval * (temp$qu - temp$ql)
-      cu <- median(x) + gval * (temp$qu - temp$ql)
-    }
-    if (!mbox) {
-      if (is.na(gval))
-        gval <- 1.5
-      cl <- temp$ql - gval * (temp$qu - temp$ql)
-      cu <- temp$qu + gval * (temp$qu - temp$ql)
-    }
-    flag <- NA
-    outid <- NA
-    vec <- c(1:n)
-    for (i in 1:n) {
-      flag[i] <- (x[i] < cl || x[i] > cu)
-    }
-    if (sum(flag) == 0)
-      outid <- NULL
-    if (sum(flag) > 0)
-      outid <- vec[flag]
-    keep <- vec[!flag]
-    outval <- x[flag]
-    n.out = sum(length(outid))
-    list(
-      out.val = outval,
-      out.id = outid,
-      keep = keep,
-      n = n,
-      n.out = n.out,
-      cl = cl,
-      cu = cu
-    )
-  }
-})
-```
+<!-- with(allfun, { -->
+<!--   outbox <- function(x, -->
+<!--                      mbox = FALSE, -->
+<!--                      gval = NA, -->
+<!--                      plotit = FALSE, -->
+<!--                      STAND = FALSE) { -->
+<!--     # -->
+<!--     # This function detects outliers using the -->
+<!--     # boxplot rule, but unlike the R function boxplot, -->
+<!--     # the ideal fourths are used to estimate the quartiles. -->
+<!--     # -->
+<!--     # Setting mbox=TRUE results in using the modification -->
+<!--     # of the boxplot rule suggested by Carling (2000). -->
+<!--     # -->
+<!--     x <- x[!is.na(x)] # Remove missing values -->
+<!--     if (plotit) -->
+<!--       boxplot(x) -->
+<!--     n <- length(x) -->
+<!--     temp <- idealf(x) -->
+<!--     if (mbox) { -->
+<!--       if (is.na(gval)) -->
+<!--         gval <- (17.63 * n - 23.64) / (7.74 * n - 3.71) -->
+<!--       cl <- median(x) - gval * (temp$qu - temp$ql) -->
+<!--       cu <- median(x) + gval * (temp$qu - temp$ql) -->
+<!--     } -->
+<!--     if (!mbox) { -->
+<!--       if (is.na(gval)) -->
+<!--         gval <- 1.5 -->
+<!--       cl <- temp$ql - gval * (temp$qu - temp$ql) -->
+<!--       cu <- temp$qu + gval * (temp$qu - temp$ql) -->
+<!--     } -->
+<!--     flag <- NA -->
+<!--     outid <- NA -->
+<!--     vec <- c(1:n) -->
+<!--     for (i in 1:n) { -->
+<!--       flag[i] <- (x[i] < cl || x[i] > cu) -->
+<!--     } -->
+<!--     if (sum(flag) == 0) -->
+<!--       outid <- NULL -->
+<!--     if (sum(flag) > 0) -->
+<!--       outid <- vec[flag] -->
+<!--     keep <- vec[!flag] -->
+<!--     outval <- x[flag] -->
+<!--     n.out = sum(length(outid)) -->
+<!--     list( -->
+<!--       out.val = outval, -->
+<!--       out.id = outid, -->
+<!--       keep = keep, -->
+<!--       n = n, -->
+<!--       n.out = n.out, -->
+<!--       cl = cl, -->
+<!--       cu = cu -->
+<!--     ) -->
+<!--   } -->
+<!-- }) -->
+<!-- ``` -->
 
 Changing the parameter of mbox results in the two different methods for detecting outliers:
 
@@ -1240,7 +1229,7 @@ The meaning of the different returned list values:
 * **cl:** Lower starting point for values to be declared as outlier.
 * **cu:** Upper starting point for values to be declared as outlier.
 
-```{lemma, label="cmp-outbox",  name="Compare detection of outliers with different bloxplot rules"}
+```{example, label="cmp-outbox",  name="Compare detection of outliers with different bloxplot rules"}
 ```
 
 ```{r compare-outbox}
@@ -1273,7 +1262,15 @@ It checks for any outliers using the [MAD-median rule](#mad-median-rule) (sectio
 
 #### One-step M-estimator
 
-It uses a slight variation of the MAD-median rule: Instead of
+
+It uses a slight variation of the MAD-median rule: 
+
+
+```{definition, label="one-step-m-estimator",  name="Detecting outliers with modified boxplot rule"}
+```
+
+
+Instead of
 
 $$\frac{|X - M|}{MADN} > 2.24$$
 
@@ -1287,57 +1284,55 @@ $$\frac{1.26(MADN)(u-l)}{n-u-l}$$
 
 #### Functions `onestep(x)` and `mom`
 
-For the two abvove mentioned measures are special functions in the `WRS2` package provided. 
 
+<!-- ```{lemma, label="one-step-and-mom-function",  name="Onestep and Modified One-stem M-Estimator (MOM) "} -->
+<!-- ``` -->
 
-```{lemma, label="one-step-and-mom-function",  name="Onestep and Modified One-stem M-Estimator (MOM) "}
-```
+<!-- ```{r one-step-and-mom} -->
+<!-- with(allfun, { -->
 
-```{r one-step-and-mom}
-with(allfun, {
-  
-  onestep <- function(x,
-                      bend = 1.28,
-                      na.rm = FALSE,
-                      MED = TRUE) {
-    #
-    #  Compute one-step M-estimator of location using Huber's Psi.
-    #  The default bending constant is 1.28
-    #
-    #  MED=TRUE: initial estimate is the median
-    #  Otherwise use modified one-step M-estimator
-    #
-    if (na.rm)
-      x <- x[!is.na(x)]
-    if (MED)
-      init.loc = median(x)
-    if (!MED)
-      init.loc = mom(x, bend = bend)
-    y <- (x - init.loc) / mad(x)  #mad in splus is madn in the book.
-    A <- sum(hpsi(y, bend))
-    B <- length(x[abs(y) <= bend])
-    onestep <- median(x) + mad(x) * A / B
-    onestep
-  }
+<!--   onestep <- function(x, -->
+<!--                       bend = 1.28, -->
+<!--                       na.rm = FALSE, -->
+<!--                       MED = TRUE) { -->
+<!--     # -->
+<!--     #  Compute one-step M-estimator of location using Huber's Psi. -->
+<!--     #  The default bending constant is 1.28 -->
+<!--     # -->
+<!--     #  MED=TRUE: initial estimate is the median -->
+<!--     #  Otherwise use modified one-step M-estimator -->
+<!--     # -->
+<!--     if (na.rm) -->
+<!--       x <- x[!is.na(x)] -->
+<!--     if (MED) -->
+<!--       init.loc = median(x) -->
+<!--     if (!MED) -->
+<!--       init.loc = mom(x, bend = bend) -->
+<!--     y <- (x - init.loc) / mad(x)  #mad in splus is madn in the book. -->
+<!--     A <- sum(hpsi(y, bend)) -->
+<!--     B <- length(x[abs(y) <= bend]) -->
+<!--     onestep <- median(x) + mad(x) * A / B -->
+<!--     onestep -->
+<!--   } -->
 
-  mom <- function(x, bend = 2.24, na.rm = TRUE) {
-    #
-    #  Compute MOM-estimator of location.
-    #  The default bending constant is 2.24
-    #
-    if (na.rm)
-        x <- x[!is.na(x)] #Remove missing values
-    flag1 <- (x > median(x) + bend * mad(x))
-    flag2 <- (x < median(x) - bend * mad(x))
-    flag <- rep(TRUE, length(x))
-    flag[flag1] <- FALSE
-    flag[flag2] <- FALSE
-    mom <- mean(x[flag])
-    mom
-}
+<!--   mom <- function(x, bend = 2.24, na.rm = TRUE) { -->
+<!--     # -->
+<!--     #  Compute MOM-estimator of location. -->
+<!--     #  The default bending constant is 2.24 -->
+<!--     # -->
+<!--     if (na.rm) -->
+<!--         x <- x[!is.na(x)] #Remove missing values -->
+<!--     flag1 <- (x > median(x) + bend * mad(x)) -->
+<!--     flag2 <- (x < median(x) - bend * mad(x)) -->
+<!--     flag <- rep(TRUE, length(x)) -->
+<!--     flag[flag1] <- FALSE -->
+<!--     flag[flag2] <- FALSE -->
+<!--     mom <- mean(x[flag]) -->
+<!--     mom -->
+<!-- } -->
 
-})
-```
+<!-- }) -->
+<!-- ``` -->
 
 
 Wilcox illustrates both measures with the following data set:
@@ -1352,8 +1347,8 @@ x.m <- c(77, 87, 88, 114, 151, 210, 219, 246, 253, 262,
         296, 299, 306, 376, 428, 515, 666, 1310, 2611)
 mean(x.m)
 median(x.m)
-format(onestep(x.m), nsmall = 2)
-format(mom(x.m), nsmall = 2)
+format(with(allfun, {onestep(x.m)}), nsmall = 2)
+format(with(allfun, {mom(x.m)}), nsmall = 2)
 ```
 
 
@@ -1403,71 +1398,71 @@ ggplot(df, aes(x = value)) +
 
 Instead of present the absolute values it might sometimes better to use the height of a spike indicating the relative values.
 
-```{lemma, label="splot-function",  name="Splot = Frequency Plot with Spikes"}
-```
+<!-- ```{lemma, label="splot-function",  name="Splot = Frequency Plot with Spikes"} -->
+<!-- ``` -->
 
-```{r splot}
-with(allfun, {
-  splot <-
-    function(x,
-             op = TRUE,
-             VL = FALSE,
-             xlab = "X",
-             ylab = "Rel. Freq.",
-             frame.plot = TRUE,
-             plotit = TRUE) {
-      #
-      # Frequency plot
-      #
-      # For each unique value in x,
-      # the relatively frequency is determined and plotted.
-      #
-      # op=TRUE a line connecting the relative frequencies is drawn if VL=FALSE.
-      # VL=TRUE, a vertical line is drawn for each unique value in x;
-      # the height of the line indicates the relative frequency.
-      #
-      # op=FALSE. No lines are drawn
-      #
-      # The function returns the sample size as well as the frequencies
-      # associated with each unique value stored in x.
-      #
-      x <- x[!is.na(x)]
-      temp <- sort(unique(x))
-      freq <- NA
-      for (i in 1:length(temp)) {
-        freq[i] <- sum(x == temp[i])
-      }
-      rmfreq = freq
-      nval = sum(freq)
-      freq <- freq / length(x)
-      tfreq <- freq
-      tfreq[1] <- 0
-      tfreq[2] <- max(freq)
-      if (plotit) {
-        plot(
-          temp,
-          tfreq,
-          xlab = xlab,
-          ylab = ylab,
-          type = "n",
-          frame.plot = frame.plot
-        )
-        points(temp, freq, pch = "*")
-        if (op)
-          if (!VL)
-            lines(temp, freq)
-        if (VL) {
-          for (i in 1:length(temp))
-            lines(c(temp[i], temp[i]), c(0, freq[i]))
-        }
-      }
-      den = sum(rmfreq)
-      list(n = nval,
-           frequencies = rmfreq,
-           rel.freq = rmfreq / den)
-    }
-})
-```
+<!-- ```{r splot} -->
+<!-- with(allfun, { -->
+<!--   splot <- -->
+<!--     function(x, -->
+<!--              op = TRUE, -->
+<!--              VL = FALSE, -->
+<!--              xlab = "X", -->
+<!--              ylab = "Rel. Freq.", -->
+<!--              frame.plot = TRUE, -->
+<!--              plotit = TRUE) { -->
+<!--       # -->
+<!--       # Frequency plot -->
+<!--       # -->
+<!--       # For each unique value in x, -->
+<!--       # the relatively frequency is determined and plotted. -->
+<!--       # -->
+<!--       # op=TRUE a line connecting the relative frequencies is drawn if VL=FALSE. -->
+<!--       # VL=TRUE, a vertical line is drawn for each unique value in x; -->
+<!--       # the height of the line indicates the relative frequency. -->
+<!--       # -->
+<!--       # op=FALSE. No lines are drawn -->
+<!--       # -->
+<!--       # The function returns the sample size as well as the frequencies -->
+<!--       # associated with each unique value stored in x. -->
+<!--       # -->
+<!--       x <- x[!is.na(x)] -->
+<!--       temp <- sort(unique(x)) -->
+<!--       freq <- NA -->
+<!--       for (i in 1:length(temp)) { -->
+<!--         freq[i] <- sum(x == temp[i]) -->
+<!--       } -->
+<!--       rmfreq = freq -->
+<!--       nval = sum(freq) -->
+<!--       freq <- freq / length(x) -->
+<!--       tfreq <- freq -->
+<!--       tfreq[1] <- 0 -->
+<!--       tfreq[2] <- max(freq) -->
+<!--       if (plotit) { -->
+<!--         plot( -->
+<!--           temp, -->
+<!--           tfreq, -->
+<!--           xlab = xlab, -->
+<!--           ylab = ylab, -->
+<!--           type = "n", -->
+<!--           frame.plot = frame.plot -->
+<!--         ) -->
+<!--         points(temp, freq, pch = "*") -->
+<!--         if (op) -->
+<!--           if (!VL) -->
+<!--             lines(temp, freq) -->
+<!--         if (VL) { -->
+<!--           for (i in 1:length(temp)) -->
+<!--             lines(c(temp[i], temp[i]), c(0, freq[i])) -->
+<!--         } -->
+<!--       } -->
+<!--       den = sum(rmfreq) -->
+<!--       list(n = nval, -->
+<!--            frequencies = rmfreq, -->
+<!--            rel.freq = rmfreq / den) -->
+<!--     } -->
+<!-- }) -->
+<!-- ``` -->
 
 
 
@@ -1478,7 +1473,8 @@ with(allfun, {
 ```{r splot-example}
 library(scales)
 f <-  c(rep.int(1, 12), rep.int(2, 22), rep.int(3, 32), rep.int(4, 19), rep.int(5, 8))
-splot(f, xlab = "X", ylab = "Rel. Freq.")
+with(allfun, {splot(f, xlab = "X", ylab = "Rel. Freq.")})
+
 
 F <- as.character(f) %>% 
   as.tibble() %>% 
@@ -1498,156 +1494,165 @@ ggplot(F, aes(x = as.integer(value), y = z)) +
 
 ```
 
-```{r kdplot-akerd}
-
-with(allfun, {
-  kdplot <- function(x,
-                     rval = 15,
-                     xlab = "X",
-                     ylab = "Y") {
-    #
-    #   Compute the kernel density estimator for a range of values
-    #   and plot results.
-    #
-    #   x contains vector of observations
-    #
-    x <- x[!is.na(x)]  #  Remove any missing values
-    y <- sort(x)
-    z <- 1
-    temp <- floor(.01 * length(x))
-    if (temp == 0)
-      temp <- 5
-    ibot <- y[temp]
-    itop <- y[floor(.99 * length(x))]
-    xaxis <- seq(ibot, itop, length = rval)
-    for (i in 1:rval)
-      z[i] <- kerden(x, 0, xaxis[i])
-    plot(xaxis, z, xlab = xlab, ylab = ylab)
-    lines(xaxis, z)
-  }
-  
-  akerd <-
-    function(xx,
-             hval = NA,
-             aval = .5,
-             op = 1,
-             fr = .8,
-             pyhat = FALSE,
-             pts = NA,
-             plotit = TRUE,
-             xlab = "",
-             ylab = "",
-             zlab = "",
-             theta = 50,
-             phi = 25,
-             expand = .5,
-             scale = TRUE,
-             ticktype = "simple",
-             color = 'black') {
-      #
-      # Compute adaptive kernel density estimate
-      #
-      # (See Silverman, 1986)
-      #
-      # op=1 Use expected frequency as initial estimate of the density
-      # op=2 Univariate case only
-      #      Use normal kernel to get initial estimate of the density
-      #  ticktype="detailed" will create ticks as done for a two-dimensional plot
-      #
-      #  Note, when pyhat=T, returns estimate of density at points in pts AFTER
-      #  putting the points in ascending order.
-      #
-      xx = elimna(xx)
-      fval <- "Done"
-      if (is.matrix(xx)) {
-        if (ncol(xx) > 1)
-          fval <- akerdmul(
-            xx,
-            pts = pts,
-            hval = hval,
-            aval = aval,
-            fr = fr,
-            pr = pyhat,
-            plotit = plotit,
-            theta = theta,
-            phi = phi,
-            expand = expand,
-            scale = scale,
-            ticktype = ticktype
-          )
-        plotit <- F
-      }
-      if (is.matrix(xx) && ncol(xx) == 1)
-        xx <- xx[, 1]
-      if (!is.matrix(xx)) {
-        x <- sort(xx)
-        if (op == 1) {
-          m <- mad(x)
-          if (m == 0) {
-            temp <- idealf(x)
-            m <-
-              (temp$qu - temp$ql) / (qnorm(.75) - qnorm(.25))
-          }
-          if (m == 0)
-            m <- sqrt(winvar(x) / .4129)
-          if (m == 0)
-            stop("All measures of dispersion are equal to 0")
-          fhat <- rdplot(x,
-                         pyhat = TRUE,
-                         plotit = FALSE,
-                         fr = fr)
-          if (m > 0)
-            fhat <- fhat / (2 * fr * m)
-        }
-        if (op == 2) {
-          init <- density(xx)
-          fhat <- init$y
-          x <- init$x
-        }
-        n <- length(x)
-        if (is.na(hval)) {
-          sig <- sqrt(var(x))
-          temp <- idealf(x)
-          iqr <- (temp$qu - temp$ql) / 1.34
-          A <- min(c(sig, iqr))
-          if (A == 0)
-            A <- sqrt(winvar(x)) / .64
-          hval <- 1.06 * A / length(x) ^ (.2)
-          # See Silverman, 1986, pp. 47-48
-        }
-        gm <- exp(mean(log(fhat[fhat > 0])))
-        alam <- (fhat / gm) ^ (0 - aval)
-        dhat <- NA
-        if (is.na(pts[1]))
-          pts <- x
-        pts <- sort(pts)
-        for (j in 1:length(pts)) {
-          temp <- (pts[j] - x) / (hval * alam)
-          epan <-
-            ifelse(abs(temp) < sqrt(5), .75 * (1 - .2 * temp ^ 2) / sqrt(5), 0)
-          dhat[j] <- mean(epan / (alam * hval))
-        }
-        if (plotit) {
-          plot(pts,
-               dhat,
-               type = "n",
-               ylab = ylab,
-               xlab = xlab)
-          lines(pts, dhat, col = color)
-        }
-        if (pyhat)
-          fval <- dhat
-      }
-      fval
-    }
-})
 
 
-```
+<!-- ```{r kdplot-akerd} -->
+
+<!-- with(allfun, { -->
+<!--   kdplot <- function(x, -->
+<!--                      rval = 15, -->
+<!--                      xlab = "X", -->
+<!--                      ylab = "Y") { -->
+<!--     # -->
+<!--     #   Compute the kernel density estimator for a range of values -->
+<!--     #   and plot results. -->
+<!--     # -->
+<!--     #   x contains vector of observations -->
+<!--     # -->
+<!--     x <- x[!is.na(x)]  #  Remove any missing values -->
+<!--     y <- sort(x) -->
+<!--     z <- 1 -->
+<!--     temp <- floor(.01 * length(x)) -->
+<!--     if (temp == 0) -->
+<!--       temp <- 5 -->
+<!--     ibot <- y[temp] -->
+<!--     itop <- y[floor(.99 * length(x))] -->
+<!--     xaxis <- seq(ibot, itop, length = rval) -->
+<!--     for (i in 1:rval) -->
+<!--       z[i] <- kerden(x, 0, xaxis[i]) -->
+<!--     plot(xaxis, z, xlab = xlab, ylab = ylab) -->
+<!--     lines(xaxis, z) -->
+<!--   } -->
+
+<!--   akerd <- -->
+<!--     function(xx, -->
+<!--              hval = NA, -->
+<!--              aval = .5, -->
+<!--              op = 1, -->
+<!--              fr = .8, -->
+<!--              pyhat = FALSE, -->
+<!--              pts = NA, -->
+<!--              plotit = TRUE, -->
+<!--              xlab = "", -->
+<!--              ylab = "", -->
+<!--              zlab = "", -->
+<!--              theta = 50, -->
+<!--              phi = 25, -->
+<!--              expand = .5, -->
+<!--              scale = TRUE, -->
+<!--              ticktype = "simple", -->
+<!--              color = 'black') { -->
+<!--       # -->
+<!--       # Compute adaptive kernel density estimate -->
+<!--       # -->
+<!--       # (See Silverman, 1986) -->
+<!--       # -->
+<!--       # op=1 Use expected frequency as initial estimate of the density -->
+<!--       # op=2 Univariate case only -->
+<!--       #      Use normal kernel to get initial estimate of the density -->
+<!--       #  ticktype="detailed" will create ticks as done for a two-dimensional plot -->
+<!--       # -->
+<!--       #  Note, when pyhat=T, returns estimate of density at points in pts AFTER -->
+<!--       #  putting the points in ascending order. -->
+<!--       # -->
+<!--       xx = elimna(xx) -->
+<!--       fval <- "Done" -->
+<!--       if (is.matrix(xx)) { -->
+<!--         if (ncol(xx) > 1) -->
+<!--           fval <- akerdmul( -->
+<!--             xx, -->
+<!--             pts = pts, -->
+<!--             hval = hval, -->
+<!--             aval = aval, -->
+<!--             fr = fr, -->
+<!--             pr = pyhat, -->
+<!--             plotit = plotit, -->
+<!--             theta = theta, -->
+<!--             phi = phi, -->
+<!--             expand = expand, -->
+<!--             scale = scale, -->
+<!--             ticktype = ticktype -->
+<!--           ) -->
+<!--         plotit <- F -->
+<!--       } -->
+<!--       if (is.matrix(xx) && ncol(xx) == 1) -->
+<!--         xx <- xx[, 1] -->
+<!--       if (!is.matrix(xx)) { -->
+<!--         x <- sort(xx) -->
+<!--         if (op == 1) { -->
+<!--           m <- mad(x) -->
+<!--           if (m == 0) { -->
+<!--             temp <- idealf(x) -->
+<!--             m <- -->
+<!--               (temp$qu - temp$ql) / (qnorm(.75) - qnorm(.25)) -->
+<!--           } -->
+<!--           if (m == 0) -->
+<!--             m <- sqrt(winvar(x) / .4129) -->
+<!--           if (m == 0) -->
+<!--             stop("All measures of dispersion are equal to 0") -->
+<!--           fhat <- rdplot(x, -->
+<!--                          pyhat = TRUE, -->
+<!--                          plotit = FALSE, -->
+<!--                          fr = fr) -->
+<!--           if (m > 0) -->
+<!--             fhat <- fhat / (2 * fr * m) -->
+<!--         } -->
+<!--         if (op == 2) { -->
+<!--           init <- density(xx) -->
+<!--           fhat <- init$y -->
+<!--           x <- init$x -->
+<!--         } -->
+<!--         n <- length(x) -->
+<!--         if (is.na(hval)) { -->
+<!--           sig <- sqrt(var(x)) -->
+<!--           temp <- idealf(x) -->
+<!--           iqr <- (temp$qu - temp$ql) / 1.34 -->
+<!--           A <- min(c(sig, iqr)) -->
+<!--           if (A == 0) -->
+<!--             A <- sqrt(winvar(x)) / .64 -->
+<!--           hval <- 1.06 * A / length(x) ^ (.2) -->
+<!--           # See Silverman, 1986, pp. 47-48 -->
+<!--         } -->
+<!--         gm <- exp(mean(log(fhat[fhat > 0]))) -->
+<!--         alam <- (fhat / gm) ^ (0 - aval) -->
+<!--         dhat <- NA -->
+<!--         if (is.na(pts[1])) -->
+<!--           pts <- x -->
+<!--         pts <- sort(pts) -->
+<!--         for (j in 1:length(pts)) { -->
+<!--           temp <- (pts[j] - x) / (hval * alam) -->
+<!--           epan <- -->
+<!--             ifelse(abs(temp) < sqrt(5), .75 * (1 - .2 * temp ^ 2) / sqrt(5), 0) -->
+<!--           dhat[j] <- mean(epan / (alam * hval)) -->
+<!--         } -->
+<!--         if (plotit) { -->
+<!--           plot(pts, -->
+<!--                dhat, -->
+<!--                type = "n", -->
+<!--                ylab = ylab, -->
+<!--                xlab = xlab) -->
+<!--           lines(pts, dhat, col = color) -->
+<!--         } -->
+<!--         if (pyhat) -->
+<!--           fval <- dhat -->
+<!--       } -->
+<!--       fval -->
+<!--     } -->
+<!-- }) -->
+
+
+<!-- ``` -->
+
+
+
 Another problem of histograms are that they are sensible about the number of outliers. In symmetric or bell-shaped distributions a historgram of a sample of 100 observation is satisfactory, but when outliers are relatively common you would need a much bigger sample size.
+
 ## Exercises
 
 ### Exercise 1
+
+```{exercise, label="exr-01", name="Exercise 01"}
+```
 
 ```{r ex-01}
 ex1 <- c(21, 36, 42, 24, 25, 36, 35, 49, 32)
@@ -1664,6 +1669,11 @@ Verify the following measures:
 ### Exercise 2
 
 Replace the highest value from vector ex1 (= 49) with 200.
+
+
+```{exercise, label="exr-02", name="Exercise 02"}
+```
+
 
 ```{r ex-2}
 ex2 <- c(21, 36, 42, 24, 25, 36, 35, 200, 32)
@@ -1685,6 +1695,11 @@ For the data in exercise 1, what is the minimum number of observation that must 
 
 The vector ex1 has `length(ex1)` values (= `r length(ex1)`), 20% from every side = more than 1 but less than 2. So two values must be altered.
 
+
+
+```{exercise, label="exr-03", name="Exercise 03"}
+```
+
 ```{r ex-3}
 ex3 <- c(21, 36, 10000, 24, 25, 36, 35, 10000, 32)
 ```
@@ -1692,19 +1707,18 @@ ex3 <- c(21, 36, 10000, 24, 25, 36, 35, 10000, 32)
 The 20% trimmed mean of ex3 = `r format(round(mean(ex3, trim = 0.2), 2), nsmall = 2)`.
 
 
-```{theorem, label="clean-up-2",  name="Detach all non-base packages and clean workspace"}
-```
 
-```{r cleanup2, warning=FALSE, results='hide'}
+```{r cleanup2, warning=FALSE, results='hide', include=FALSE}
 
-suppressWarnings(lapply(names(sessionInfo()$otherPkgs),
-                         function(pkgs)
-                           detach(
-                             paste0('package:', pkgs),
-                             character.only = T,
-                             unload = T,
-                             force = T
-                           )))
+# suppressWarnings(lapply(names(sessionInfo()$otherPkgs),
+#                          function(pkgs)
+#                            detach(
+#                              paste0('package:', pkgs),
+#                              character.only = T,
+#                              unload = T,
+#                              force = T
+#                            )))
+
 rm(list = setdiff(ls(), freeze))
 
 ```
