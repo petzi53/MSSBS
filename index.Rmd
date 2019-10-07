@@ -69,8 +69,13 @@ knitr::knit_hooks$set(engine = function(before, options) {
 allfun <- new.env()
 with(allfun, {source(file = "_mssbs-software/Rallfun.R", local = TRUE)})
 
+#######################################################################
+# Store all variables up to this line
+# Later generated variables will be deleted after end of each chapter
+freeze <- ls()
 
 #######################################################################
+
 ## Miscellanous other general settings
 
 # disabling scientific notation in calculation
@@ -165,10 +170,7 @@ if (!requireNamespace("WRS"))
 # load all packages above
 xfun::pkg_attach2(list.of.packages, "WRS")
 
-#######################################################################
-# Store all variables up to this line
-# Later generated variables will be deleted after end of each chapter
-freeze <- ls()
+
 
 
 ```
@@ -200,7 +202,7 @@ To get a better overview which functions are used and to have full control of us
 
 3) Finally at the end of each chapter I will remove all non-base packages and clean up the working space so that I can start each chapter from scratch without side effects.
 
-```{r cleanup, results='hide', include=FALSE}
+```{r cleanup, results='hide'}
 # xxx <- suppressWarnings(lapply(names(sessionInfo()$otherPkgs),
 #                         function(pkgs)
 #                           detach(
