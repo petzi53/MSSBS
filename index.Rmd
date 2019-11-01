@@ -85,13 +85,17 @@ default_scipen <- options("scipen" = 999)
 
 ```
 
-This chapter presents my motivation to write this book besides some requirements and starting points so that you can follow the following sections on your own.
-
 ## Status of this book
 
-This book collects my excerpts and personal notes on 
+```{r fig.align='center', echo=FALSE, include=identical(knitr:::pandoc_to(), 'html'), fig.link='https://www.taylorfrancis.com/books/9781315154480'}
+knitr::include_graphics('images/MSSBS-Notes-cover-min.jpg', dpi = NA)
+```
 
-> Rand, W. (2017). Modern Statistics for the Social and Behavioral Sciences: A Practical Introduction, Second Edition (2 New edition). Boca Raton, FL: Taylor & Francis Inc.
+> Wilcox, Rand (2017). Modern Statistics for the Social and Behavioral Sciences: A Practical Introduction, Second Edition (2 New edition). Boca Raton, FL: Taylor & Francis Inc. [The picture is a mockup of the original cover where I have added "Personal Notes on" and "Notes by Peter Baumgartner"].
+
+
+The text you are currently reading collects my excerpts and personal notes on "Modern Statistics for the Social and Behavioral Sciences".
+
 
 Please keep in mind that this book is just a kind of training exercise for me. There will be no new insights presented, and as I am still learning the basics of R and statistics, you may find misunderstandings and errors in my writings. For authoritative reference, you have to consult the original book.  
 
